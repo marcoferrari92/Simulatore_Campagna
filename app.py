@@ -16,53 +16,49 @@ import seaborn as sns
 # Configurazione Pagina
 st.set_page_config(page_title="Simulatore campagna marketing", layout="wide")
 
-# --- SIDEBAR: Configurazione ---
-st.sidebar.header("Configurazione")
-api_key = st.sidebar.text_input("Inserisci OpenAI API Key", type="password")
+# --- SIDEBAR: Configurazione Parametri Custom ---
+st.sidebar.header("⚖️ Pesi e Parametri")
 
-# Nuovi Parametri AI (con valori di default)
-st.sidebar.subheader("Impostazioni AI")
-with st.sidebar.expander("Personalizza Comportamento AI", expanded=False):
-    ai_role = st.text_area("AI Role", 
-                           value="Sei un consulente aziendale esperto. Valuta l'interesse pratico.",
-                           help="Definisce la personalità dell'AI")
-    
-    ai_task = st.text_area("AI Task", 
-                           value="Analizza se questa azienda è interessata a ricevere questa campagna.",
-                           help="L'istruzione principale per l'analisi")
-    
-    eval_criteria = st.text_area("Criteri di Valutazione", 
-                                 value="- L'argomento è critico per l'operatività?\n- L'azienda deve applicare queste normative?",
-                                 help="I punti specifici da controllare")
-    
-    max_words = st.number_input("Max parole (Motivo)", min_value=5, max_value=100, value=15)
-    temp = st.slider("Temperature (Creatività)", min_value=0.0, max_value=1.0, value=0.0, step=0.1)
+# Parametro 1 (Default: Geolocalizzazione)
+p1_label = st.sidebar.text_input("Etichetta Parametro 1", "Geolocalizzazione")
+p1_weight = st.sidebar.slider(f"Peso {p1_label}", 0.0, 1.0, 0.2)
+
+# Parametro 2 (Default: Dimensione Azienda)
+p2_label = st.sidebar.text_input("Etichetta Parametro 2", "Dimensione Azienda")
+p2_weight = st.sidebar.slider(f"Peso {p2_label}", 0.0, 1.0, 0.2)
+
+# Peso della Descrizione (Tecnico)
+desc_weight = st.sidebar.slider("Peso Descrizione/Settore", 0.0, 1.0, 0.6)
+
+# Normalizzazione pesi per calcolo matematico
+total_w = p1_weight + p2_weight + desc_weight
+if total_w > 0:
+    w1, w2, wd = p1_weight/total_w, p2_weight/total_w, desc_weight/total_w
+else:
+    w1, w2, wd = 0.33, 0.33, 0.34
 
 # --- UI PRINCIPALE ---
-st.title("🏢 Business Campaign Matcher")
-st.markdown("Carica il database aziendale e definisci i parametri della campagna per trovare i lead migliori.")
+st.title("🏢 Business Campaign Matcher Pro")
+st.info(f"Formato file richiesto: `Nome : Descrizione : {p1_label} : {p2_label}`")
 
-col1, col2 = st.columns(2)
-
-with col1:
-    uploaded_file = st.file_uploader("Carica il file TXT (Formato Nome : Descrizione)", type=["txt"])
-
-with col2:
-    # Cambiato da newsletter_text a campaign_text per coerenza
-    campaign_text = st.text_area("Oggetto/Testo della Campagna:", 
-                                 placeholder="Esempio: Nuove tecnologie per l'industria 4.0...")
+# ... (codice per uploaded_file e campaign_text rimane uguale) ...
 
 # --- ESECUZIONE ---
 if st.button("Avvia Analisi Strategica") and uploaded_file and campaign_text and api_key:
     client = OpenAI(api_key=api_key)
     
-    # Lettura file
+    # 1. LETTURA FILE MIGLIORATA (4 Colonne)
     content = uploaded_file.read().decode('utf-8-sig', errors='ignore')
     data = []
     for line in content.splitlines():
-        if ":" in line:
-            parti = line.split(":", 1)
-            data.append({"Nome": parti[0].strip(), "Descrizione": parti[1].strip()})
+        parti = line.split(":", 3) # Dividiamo in max 4 parti
+        if len(parti) == 4:
+            data.append({
+                "Nome": parti[0].strip(),
+                "Descrizione": parti[1].strip(),
+                "P1_val": parti[2].strip(),
+                "P2_val": parti[3].strip()
+            })
     
     df = pd.DataFrame(data)
     
@@ -71,43 +67,66 @@ if st.button("Avvia Analisi Strategica") and uploaded_file and campaign_text and
         status_text = st.empty()
         results = []
         
-        # Embedding Campagna
+        # Embedding Campagna (per l'Affinità semantica generale)
         news_vec = emb.get_embedding(client, campaign_text)
         
         for i, row in df.iterrows():
             status_text.text(f"Analisi in corso: {row['Nome']}...")
             
-            # Calcolo Embedding
+            # Calcolo Embedding per confronto semantico
             azi_vec = emb.get_embedding(client, row['Descrizione'])
             sim = cosine_similarity([news_vec], [azi_vec])[0][0]
             
-            # Chiamata alla nuova funzione LLM con i parametri dell'interfaccia
-            score, motivo = llm.valuta_llm(
+            # 2. CHIAMATA ALLA FUNZIONE PRO (Ritorna un dizionario di voti)
+            voti, motivo = llm.valuta_llm_pro(
                 client,
                 campaign=campaign_text,
                 company_name=row['Nome'],
                 company_description=row['Descrizione'],
+                param1_name=p1_label,
+                param1_value=row['P1_val'],
+                param2_name=p2_label,
+                param2_value=row['P2_val'],
                 AI_role=ai_role,
                 AI_task=ai_task,
-                evaluation_criteria=eval_criteria,
                 max_words=max_words,
                 temperature=temp
             )
             
+            # 3. CALCOLO PUNTEGGIO PESATO
+            # final_score = (VotoDesc * PesoDesc) + (VotoP1 * PesoP1) + (VotoP2 * PesoP2)
+            score_finale = (voti["desc"] * wd) + (voti["p1"] * w1) + (voti["p2"] * w2)
+            
             results.append({
                 "Azienda": row['Nome'],
-                "Interesse": score,
+                "Score Finale": round(score_finale, 1),
                 "Analisi": motivo,
-                "Affinità": round(sim * 100, 1)
+                f"Match {p1_label}": voti["p1"],
+                f"Match {p2_label}": voti["p2"],
+                "Match Tecnico": voti["desc"],
+                "Affinità Semantica": round(sim * 100, 1)
             })
             progress_bar.progress((i + 1) / len(df))
         
         status_text.success("Analisi Completata!")
         
-        # Risultati
-        res_df = pd.DataFrame(results).sort_values(by="Interesse", ascending=False)
+        # Risultati ordinati per lo Score Finale (quello pesato)
+        res_df = pd.DataFrame(results).sort_values(by="Score Finale", ascending=False)
         
-        st.subheader("🏆 Risultati Ranking")
+        st.subheader("🏆 Risultati Ranking Strategico")
         st.dataframe(res_df, use_container_width=True)
         
-        # ... resto del codice per i grafici ...
+        # --- GRAFICI ---
+        st.divider()
+        c1, c2 = st.columns(2)
+        with c1:
+            fig1, ax1 = plt.subplots()
+            sns.barplot(x="Score Finale", y="Azienda", data=res_df.head(10), palette="viridis", ax=ax1)
+            ax1.set_title("Top 10 Lead (Punteggio Pesato)")
+            st.pyplot(fig1)
+        with c2:
+            fig2, ax2 = plt.subplots()
+            # Confronto tra Match Tecnico e Match Geografico/P1
+            sns.scatterplot(x=f"Match {p1_label}", y="Match Tecnico", size="Score Finale", data=res_df, ax=ax2)
+            ax2.set_title(f"Distribuzione {p1_label} vs Tecnico")
+            st.pyplot(fig2)
