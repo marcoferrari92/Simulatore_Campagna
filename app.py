@@ -119,15 +119,15 @@ if st.button("🚀 Avvia Analisi Strategica") and uploaded_file and campaign_tex
             })
             progress_bar.progress((i + 1) / len(df))
             
-            # ... (visualizzazione risultati e grafici come prima) ...
+# ... (visualizzazione risultati e grafici come prima) ...
             
-            status_text.success("✅ Analisi Completata!")
-            res_df = pd.DataFrame(results).sort_values(by="Score Finale", ascending=False)
-            st.subheader("🏆 Ranking Lead Strategici")
-            st.dataframe(res_df, use_container_width=True)
+status_text.success("✅ Analisi Completata!")
+res_df = pd.DataFrame(results).sort_values(by="Score Finale", ascending=False)
+st.subheader("🏆 Ranking Lead Strategici")
+st.dataframe(res_df, use_container_width=True)
             
-            # Grafico
-            st.divider()
-            fig1, ax1 = plt.subplots(figsize=(10, 5))
-            sns.barplot(x="Score Finale", y="Azienda", data=res_df.head(10), palette="viridis", ax=ax1)
-            st.pyplot(fig1)
+# Grafico
+st.divider()
+fig1, ax1 = plt.subplots(figsize=(10, 5))
+sns.barplot(x="Score Finale", y="Azienda", data=res_df.head(10), palette="viridis", ax=ax1)
+st.pyplot(fig1)
