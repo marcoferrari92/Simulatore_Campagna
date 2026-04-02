@@ -1,4 +1,4 @@
-from library.nlp_utils import clean_text_for_embedding
+from .nlp_utils import clean_text_for_embedding
 
 def get_embedding(text, verbose=False):
     """
