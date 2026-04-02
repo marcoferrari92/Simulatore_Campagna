@@ -51,11 +51,10 @@ st.markdown(f"""
 **Istruzioni:** Carica un file `.json` che contenga una lista di oggetti. 
 Le chiavi devono corrispondere ai nomi dei parametri nella sidebar (es: `{p1_label}`, `{p2_label}`, `{p3_label}`).
 """)
-uploaded_file = st.file_uploader("Carica il database (.json)", type=["json"])
 
 col1, col2 = st.columns(2)
 with col1:
-    uploaded_file = st.file_uploader("Carica il database (.txt)", type=["txt"])
+    uploaded_file = st.file_uploader("Carica il database (.json)", type=["json"])
 with col2:
     campaign_text = st.text_area("Testo della Campagna:", placeholder="Incolla qui la newsletter...", height=150)
 
