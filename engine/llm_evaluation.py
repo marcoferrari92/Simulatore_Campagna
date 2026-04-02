@@ -1,4 +1,5 @@
-def llm_evaluation(
+def valuta_llm(
+    client,  
     campaign, 
     company_name, 
     company_description, 
