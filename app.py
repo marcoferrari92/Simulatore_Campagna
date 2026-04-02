@@ -1,5 +1,5 @@
 # Importazione funzioni
-import engine.embedding_utils as emb
+from engine.nlp_utils import clean_text_for_embedding
 
 
 import streamlit as st
