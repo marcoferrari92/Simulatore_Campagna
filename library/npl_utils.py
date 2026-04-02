@@ -1,7 +1,7 @@
 import spacy
 import streamlit as st
 
-@st.cache_resource #evita che venga ricaricato il modello ogni volta che viene ri-eseguito il codice
+@st.cache_resource #evita che venga ricaricato il modello nlp ogni volta che viene ri-eseguito il codice
 def load_nlp():
     try:
         return spacy.load("it_core_news_sm")
