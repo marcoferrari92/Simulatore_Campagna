@@ -82,7 +82,7 @@ if st.button("Avvia Analisi Strategica") and uploaded_file and campaign_text and
             sim = cosine_similarity([news_vec], [azi_vec])[0][0]
             
             # Chiamata alla nuova funzione LLM con i parametri dell'interfaccia
-            score, motivo = llm.valuta_llm(
+            score, motivo = llm.llm_evaluation(
                 campaign=campaign_text,
                 company_name=row['Nome'],
                 company_description=row['Descrizione'],
