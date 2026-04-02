@@ -7,19 +7,11 @@ from sklearn.metrics.pairwise import cosine_similarity
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# Iportazione funzioni
+from library.embedding_utils import get_embedding
+
 # Configurazione Pagina
 st.set_page_config(page_title="Analizzatore Newsletter", layout="wide")
-
-# Funzione per caricare il modello NLP (cache per velocità)
-@st.cache_resource
-def load_nlp():
-    try:
-        return spacy.load("it_core_news_sm")
-    except OSError:
-        spacy.cli.download("it_core_news_sm")
-        return spacy.load("it_core_news_sm")
-
-nlp = load_nlp()
 
 # --- SIDEBAR: Configurazione ---
 st.sidebar.header("Configurazione")
