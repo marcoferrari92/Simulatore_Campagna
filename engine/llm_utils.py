@@ -4,7 +4,7 @@ def valuta_llm_pro(
     company_data,  # Riceve il dizionario completo della riga JSON
     p1_name, p2_name, p3_name,
     AI_role, AI_task, evaluation_criteria,
-    max_words=15, temperature=0
+    max_words=50, temperature=0
 ):
     # Estraiamo i valori in base alle etichette scelte nella sidebar
     # Se la chiave non esiste nel JSON, usiamo "N/D"
