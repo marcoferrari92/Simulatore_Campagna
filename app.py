@@ -1,3 +1,13 @@
+import sys
+import os
+
+# Forza Python a vedere la cartella corrente come sorgente dei moduli
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+# Importazione funzioni
+import engine.embedding_utils as emb
+
+
 import streamlit as st
 import pandas as pd
 import spacy
@@ -7,8 +17,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Iportazione funzioni
-import engine.embedding_utils as emb
 
 # Configurazione Pagina
 st.set_page_config(page_title="Analizzatore Newsletter", layout="wide")
