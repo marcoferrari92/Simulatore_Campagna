@@ -14,8 +14,9 @@ nlp = load_nlp()
 # CLEAN TEXT FOR EMBEDDING
 # *************************
 """
-Estrae solo le parole chiave dal testo, rimuovendo:
-     t.is_stop     -> stop word: articoli, preposizioni, pronomi
+Estrae solo le parole chiave dal testo per un futuro embedding.
+Vengono rimosse:
+     t.is_stop     -> stop words: articoli, preposizioni, pronomi
      t.is_punct     -> punteggiatura
      t.is_space     -> spazi
 """
