@@ -2,9 +2,7 @@
 from engine.nlp_utils import clean_text_for_embedding
 from openai import OpenAI
 
-client = OpenAI()
-
-def get_embedding(text, verbose=False):
+def get_embedding(client, text, verbose=False):
     """
     Genera un embedding OpenAI filtrando prima il testo.
     Se verbose=True, stampa il testo prima e dopo il filtro.
