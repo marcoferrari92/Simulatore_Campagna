@@ -1,3 +1,4 @@
+import json 
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -45,8 +46,12 @@ with st.sidebar.expander("Personalizza Comportamento AI", expanded=False):
     temp = st.slider("Temperature (Creatività)", min_value=0.0, max_value=1.0, value=0.0, step=0.1)
 
 # --- UI PRINCIPALE ---
-st.title("🏢 Analizzatore campagna marketing")
-st.markdown(f"**Formato file richiesto:** `Nome Azienda : {p1_label} : {p2_label} : {p3_label}`")
+st.title("🏢 Business Campaign Matcher JSON Pro")
+st.markdown(f"""
+**Istruzioni:** Carica un file `.json` che contenga una lista di oggetti. 
+Le chiavi devono corrispondere ai nomi dei parametri nella sidebar (es: `{p1_label}`, `{p2_label}`, `{p3_label}`).
+""")
+uploaded_file = st.file_uploader("Carica il database (.json)", type=["json"])
 
 col1, col2 = st.columns(2)
 with col1:
@@ -54,72 +59,68 @@ with col1:
 with col2:
     campaign_text = st.text_area("Testo della Campagna:", placeholder="Incolla qui la newsletter...", height=150)
 
+
+        
 # --- ESECUZIONE ---
-if st.button("🚀 Avvia Analisi Strategica"):
-    if not api_key:
-        st.error("Inserisci la API Key.")
-    elif not uploaded_file or not campaign_text:
-        st.warning("Carica un file e inserisci il testo della campagna.")
-    else:
-        client = OpenAI(api_key=api_key)
-        content = uploaded_file.read().decode('utf-8-sig', errors='ignore')
-        data = []
-        
-        for line in content.splitlines():
-            parti = line.split(":", 3)
-            if len(parti) == 4:
-                data.append({
-                    "Nome": parti[0].strip(),
-                    "P1_val": parti[1].strip(),
-                    "P2_val": parti[2].strip(),
-                    "P3_val": parti[3].strip()
-                })
-        
+if st.button("🚀 Avvia Analisi Strategica") and uploaded_file and campaign_text and api_key:
+    client = OpenAI(api_key=api_key)
+    
+    # Lettura JSON
+    try:
+        data = json.load(uploaded_file)
+        # Assicuriamoci che data sia una lista
+        if isinstance(data, dict):
+            data = [data]
         df = pd.DataFrame(data)
+    except Exception as e:
+        st.error(f"Errore nella lettura del JSON: {e}")
+        df = pd.DataFrame()
+
+    if not df.empty:
+        progress_bar = st.progress(0)
+        status_text = st.empty()
+        results = []
         
-        if not df.empty:
-            progress_bar = st.progress(0)
-            status_text = st.empty()
-            results = []
+        news_vec = emb.get_embedding(client, campaign_text)
+        
+        for i, row in df.iterrows():
+            status_text.text(f"Analisi: {row.get('nome', 'Azienda')}...")
             
-            # Embedding Campagna (Usiamo P1_val come riferimento semantico principale per l'affinità)
-            news_vec = emb.get_embedding(client, campaign_text)
+            # Per l'affinità semantica usiamo il Parametro 1 (es. descrizione)
+            p1_val = row.get(p1_label, "")
+            azi_vec = emb.get_embedding(client, str(p1_val))
+            sim = cosine_similarity([news_vec], [azi_vec])[0][0]
             
-            for i, row in df.iterrows():
-                status_text.text(f"Analisi: {row['Nome']}...")
-                
-                # Embedding Affinità (rispetto al Parametro 1, solitamente la descrizione)
-                azi_vec = emb.get_embedding(client, row['P1_val'])
-                sim = cosine_similarity([news_vec], [azi_vec])[0][0]
-                
-                # Chiamata LLM PRO
-                voti, motivo = llm.valuta_llm_pro(
-                    client=client,
-                    campaign=campaign_text,
-                    company_name=row['Nome'],
-                    p1_name=p1_label, p1_value=row['P1_val'],
-                    p2_name=p2_label, p2_value=row['P2_val'],
-                    p3_name=p3_label, p3_value=row['P3_val'],
-                    AI_role=ai_role,
-                    AI_task=ai_task,
-                    evaluation_criteria=eval_criteria,
-                    max_words=max_words,
-                    temperature=temp
-                )
-                
-                # Calcolo Finale Pesato
-                score_finale = (voti["v1"] * w1) + (voti["v2"] * w2) + (voti["v3"] * w3)
-                
-                results.append({
-                    "Azienda": row['Nome'],
-                    "Score Finale": round(score_finale, 1),
-                    "Analisi": motivo,
-                    f"Match {p1_label}": voti["v1"],
-                    f"Match {p2_label}": voti["v2"],
-                    f"Match {p3_label}": voti["v3"],
-                    "Affinità Semantica (%)": round(sim * 100, 1)
-                })
-                progress_bar.progress((i + 1) / len(df))
+            # Passiamo l'intero dizionario della riga alla funzione
+            voti, motivo = llm.valuta_llm_pro(
+                client=client,
+                campaign=campaign_text,
+                company_data=row.to_dict(), # Convertiamo la riga del DF in dizionario
+                p1_name=p1_label,
+                p2_name=p2_label,
+                p3_name=p3_label,
+                AI_role=ai_role,
+                AI_task=ai_task,
+                evaluation_criteria=eval_criteria,
+                max_words=max_words,
+                temperature=temp
+            )
+            
+            # Calcolo Punteggio Pesato (wd, w1, w2 calcolati nella sidebar come prima)
+            score_finale = (voti["v1"] * w1) + (voti["v2"] * w2) + (voti["v3"] * w3)
+            
+            results.append({
+                "Azienda": row.get('nome', f"Azienda {i}"),
+                "Score Finale": round(score_finale, 1),
+                "Analisi": motivo,
+                f"Match {p1_label}": voti["v1"],
+                f"Match {p2_label}": voti["v2"],
+                f"Match {p3_label}": voti["v3"],
+                "Affinità (%)": round(sim * 100, 1)
+            })
+            progress_bar.progress((i + 1) / len(df))
+            
+            # ... (visualizzazione risultati e grafici come prima) ...
             
             status_text.success("✅ Analisi Completata!")
             res_df = pd.DataFrame(results).sort_values(by="Score Finale", ascending=False)
