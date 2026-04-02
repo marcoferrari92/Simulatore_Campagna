@@ -2,30 +2,35 @@ def valuta_llm_pro(
     client, 
     campaign, 
     company_name, 
-    company_description, 
-    param1_name, param1_value,
-    param2_name, param2_value,
-    AI_role, AI_task, 
+    p1_name, p1_value,
+    p2_name, p2_value,
+    p3_name, p3_value,
+    AI_role, AI_task, evaluation_criteria,
     max_words=15, temperature=0
 ):
+    # Creiamo chiavi univoche per il parsing basate sui nomi dei parametri
+    key1 = p1_name.upper().replace(" ", "_")
+    key2 = p2_name.upper().replace(" ", "_")
+    key3 = p3_name.upper().replace(" ", "_")
+
     prompt = f"""
     {AI_task}
 
-    DATI AZIENDA:
-    - Nome: {company_name}
-    - Descrizione: {company_description}
-    - {param1_name.upper()}: {param1_value}
-    - {param2_name.upper()}: {param2_value}
-
-    DETTAGLI CAMPAGNA:
+    CAMPAGNA DA ANALIZZARE:
     {campaign}
 
-    Analizza la compatibilità basandoti su tre pilastri: Descrizione Tecnica, {param1_name} e {param2_name}.
-    
+    DATI AZIENDA ({company_name}):
+    - {p1_name}: {p1_value}
+    - {p2_name}: {p2_value}
+    - {p3_name}: {p3_value}
+
+    CRITERI DI VALUTAZIONE AI:
+    {evaluation_criteria}
+
     Rispondi RIGOROSAMENTE in questo formato:
-    VOTO_DESCRIZIONE: [0-100]
-    VOTO_{param1_name.upper().replace(' ', '_')}: [0-100]
-    VOTO_{param2_name.upper().replace(' ', '_')}: [0-100]
+    VOTO_{key1}: [voto da 0 a 100]
+    VOTO_{key2}: [voto da 0 a 100]
+    VOTO_{key3}: [voto da 0 a 100]
     MOTIVO: [spiegazione tecnica max {max_words} parole]
     """
 
@@ -39,23 +44,18 @@ def valuta_llm_pro(
     )
 
     text = response.choices[0].message.content
-    
-    # Parsing dinamico dei voti
-    results = {"desc": 0, "p1": 0, "p2": 0}
-    reason = ""
-    
-    p1_key = f"VOTO_{param1_name.upper().replace(' ', '_')}"
-    p2_key = f"VOTO_{param2_name.upper().replace(' ', '_')}"
+    voti = {"v1": 0, "v2": 0, "v3": 0}
+    motivo = ""
 
     for line in text.split("\n"):
         line_up = line.upper()
-        if "VOTO_DESCRIZIONE" in line_up:
-            results["desc"] = int(''.join(filter(str.isdigit, line.split(":")[1])))
-        elif p1_key in line_up:
-            results["p1"] = int(''.join(filter(str.isdigit, line.split(":")[1])))
-        elif p2_key in line_up:
-            results["p2"] = int(''.join(filter(str.isdigit, line.split(":")[1])))
+        if f"VOTO_{key1}" in line_up:
+            voti["v1"] = int(''.join(filter(str.isdigit, line.split(":")[1])))
+        elif f"VOTO_{key2}" in line_up:
+            voti["v2"] = int(''.join(filter(str.isdigit, line.split(":")[1])))
+        elif f"VOTO_{key3}" in line_up:
+            voti["v3"] = int(''.join(filter(str.isdigit, line.split(":")[1])))
         elif "MOTIVO" in line_up:
-            reason = line.split(":", 1)[1].strip()
+            motivo = line.split(":", 1)[1].strip()
 
-    return results, reason
+    return voti, motivo
