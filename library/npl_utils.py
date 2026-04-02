@@ -1,6 +1,13 @@
 import spacy
 import streamlit as st
 
+# *********
+# LOAD NLP
+# *********
+"""
+Carica, se non è già stato caricato, il modello NLP per la pulizia del testo
+da parte della funzione clean_text_for_embedding
+"""
 @st.cache_resource #evita che venga ricaricato il modello nlp ogni volta che viene ri-eseguito il codice
 def load_nlp():
     try:
