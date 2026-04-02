@@ -30,13 +30,6 @@ with col2:
     newsletter_text = st.text_area("Descrizione della newsletter:", placeholder="Esempio: Nuove normative sulla sicurezza sul lavoro...")
 
 # --- LOGICA CORE ---
-def get_embedding(client, text):
-    doc = nlp(str(text).lower())
-    tokens = [t.text for t in doc if not t.is_stop and not t.is_punct and not t.is_space]
-    clean_text = " ".join(tokens) if tokens else str(text)
-    response = client.embeddings.create(model="text-embedding-3-large", input=clean_text)
-    return response.data[0].embedding
-
 def valuta_llm(client, newsletter, azienda, descrizione):
     prompt = f"NEWSLETTER: {newsletter}\nAZIENDA: {azienda}\nATTIVITÀ: {descrizione}\nValuta compatibilità 0-100 e motivo breve."
     response = client.chat.completions.create(
