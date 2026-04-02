@@ -1,5 +1,6 @@
 # Importazione funzioni
 import engine.embedding_utils as emb
+import engine.llm_evaluation as llm
 
 
 import streamlit as st
@@ -13,15 +14,33 @@ import seaborn as sns
 
 
 # Configurazione Pagina
-st.set_page_config(page_title="Analizzatore Newsletter", layout="wide")
+st.set_page_config(page_title="Simulatore campagna marketing", layout="wide")
 
 # --- SIDEBAR: Configurazione ---
 st.sidebar.header("Configurazione")
 api_key = st.sidebar.text_input("Inserisci OpenAI API Key", type="password")
 
+# Nuovi Parametri AI (con valori di default)
+st.sidebar.subheader("Impostazioni AI")
+with st.sidebar.expander("Personalizza Comportamento AI", expanded=False):
+    ai_role = st.text_area("AI Role", 
+                           value="Sei un consulente aziendale esperto. Valuta l'interesse pratico.",
+                           help="Definisce la personalità dell'AI")
+    
+    ai_task = st.text_area("AI Task", 
+                           value="Analizza se questa azienda è interessata a ricevere questa campagna.",
+                           help="L'istruzione principale per l'analisi")
+    
+    eval_criteria = st.text_area("Criteri di Valutazione", 
+                                 value="- L'argomento è critico per l'operatività?\n- L'azienda deve applicare queste normative?",
+                                 help="I punti specifici da controllare")
+    
+    max_words = st.number_input("Max parole (Motivo)", min_value=5, max_value=100, value=15)
+    temp = st.slider("Temperature (Creatività)", min_value=0.0, max_value=1.0, value=0.0, step=0.1)
+
 # --- UI PRINCIPALE ---
-st.title("🏢 Business Newsletter Matcher")
-st.markdown("Carica il database aziendale e incolla il testo della newsletter per trovare i lead migliori.")
+st.title("🏢 Business Campaign Matcher")
+st.markdown("Carica il database aziendale e definisci i parametri della campagna per trovare i lead migliori.")
 
 col1, col2 = st.columns(2)
 
@@ -29,30 +48,12 @@ with col1:
     uploaded_file = st.file_uploader("Carica il file TXT (Formato Nome : Descrizione)", type=["txt"])
 
 with col2:
-    newsletter_text = st.text_area("Descrizione della newsletter:", placeholder="Esempio: Nuove normative sulla sicurezza sul lavoro...")
-
-# --- LOGICA CORE ---
-def valuta_llm(client, newsletter, azienda, descrizione):
-    prompt = f"NEWSLETTER: {newsletter}\nAZIENDA: {azienda}\nATTIVITÀ: {descrizione}\nValuta compatibilità 0-100 e motivo breve."
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "system", "content": "Rispondi solo in formato COMPATIBILITA: [voto]\nMOTIVO: [max 15 parole]"},
-                  {"role": "user", "content": prompt}],
-        temperature=0
-    )
-    res = response.choices[0].message.content
-    # Parsing veloce
-    score = 0
-    motivo = "N/D"
-    for line in res.split("\n"):
-        if "COMPATIBILITA" in line.upper():
-            score = int(''.join(filter(str.isdigit, line)))
-        if "MOTIVO" in line.upper():
-            motivo = line.split(":", 1)[1].strip()
-    return score, motivo
+    # Cambiato da newsletter_text a campaign_text per coerenza
+    campaign_text = st.text_area("Oggetto/Testo della Campagna:", 
+                                 placeholder="Esempio: Nuove tecnologie per l'industria 4.0...")
 
 # --- ESECUZIONE ---
-if st.button("Avvia Analisi Strategica") and uploaded_file and newsletter_text and api_key:
+if st.button("Avvia Analisi Strategica") and uploaded_file and campaign_text and api_key:
     client = OpenAI(api_key=api_key)
     
     # Lettura file
@@ -67,16 +68,30 @@ if st.button("Avvia Analisi Strategica") and uploaded_file and newsletter_text a
     
     if not df.empty:
         progress_bar = st.progress(0)
+        status_text = st.empty()
         results = []
         
-        # Embedding Newsletter
-        news_vec = emb.get_embedding(client,newsletter_text)
+        # Embedding Campagna
+        news_vec = emb.get_embedding(client, campaign_text)
         
         for i, row in df.iterrows():
-            # Calcolo Embedding e LLM
-            azi_vec = emb.get_embedding(client,row['Descrizione'])
+            status_text.text(f"Analisi in corso: {row['Nome']}...")
+            
+            # Calcolo Embedding
+            azi_vec = emb.get_embedding(client, row['Descrizione'])
             sim = cosine_similarity([news_vec], [azi_vec])[0][0]
-            score, motivo = valuta_llm(client, newsletter_text, row['Nome'], row['Descrizione'])
+            
+            # Chiamata alla nuova funzione LLM con i parametri dell'interfaccia
+            score, motivo = llm.valuta_llm(
+                campaign=campaign_text,
+                company_name=row['Nome'],
+                company_description=row['Descrizione'],
+                AI_role=ai_role,
+                AI_task=ai_task,
+                evaluation_criteria=eval_criteria,
+                max_words=max_words,
+                temperature=temp
+            )
             
             results.append({
                 "Azienda": row['Nome'],
@@ -86,26 +101,12 @@ if st.button("Avvia Analisi Strategica") and uploaded_file and newsletter_text a
             })
             progress_bar.progress((i + 1) / len(df))
         
+        status_text.success("Analisi Completata!")
+        
         # Risultati
         res_df = pd.DataFrame(results).sort_values(by="Interesse", ascending=False)
         
         st.subheader("🏆 Risultati Ranking")
         st.dataframe(res_df, use_container_width=True)
         
-        # Grafici
-        st.divider()
-        c1, c2 = st.columns(2)
-        with c1:
-            fig1, ax1 = plt.subplots()
-            sns.histplot(res_df["Interesse"], color="skyblue", kde=True, ax=ax1)
-            ax1.set_title("Distribuzione Interesse (LLM)")
-            st.pyplot(fig1)
-        with c2:
-            fig2, ax2 = plt.subplots()
-            sns.histplot(res_df["Affinità"], color="salmon", kde=True, ax=ax2)
-            ax2.set_title("Distribuzione Affinità (Embedding)")
-            st.pyplot(fig2)
-    else:
-        st.error("Il file caricato non sembra essere nel formato corretto.")
-else:
-    st.info("Configura l'API Key, carica un file e scrivi la descrizione per iniziare.")
+        # ... resto del codice per i grafici ...
