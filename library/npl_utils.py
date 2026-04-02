@@ -1,5 +1,7 @@
 import spacy
+import streamlit as st
 
+@st.cache_resource
 def load_nlp():
     try:
         return spacy.load("it_core_news_sm")
