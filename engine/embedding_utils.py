@@ -1,5 +1,8 @@
 
 from engine.nlp_utils import clean_text_for_embedding
+from openai import OpenAI
+
+client = OpenAI()
 
 def get_embedding(text, verbose=False):
     """
