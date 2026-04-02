@@ -6,7 +6,7 @@ import seaborn as sns
 from openai import OpenAI
 from sklearn.metrics.pairwise import cosine_similarity
 import engine.embedding_utils as emb
-import engine.llm_utils.py as llm
+import engine.llm_utils as llm
 
 # --- SIDEBAR: Configurazione Parametri ---
 st.sidebar.header("⚖️ Pesi e Parametri Campagna")
