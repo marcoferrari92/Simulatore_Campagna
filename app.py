@@ -1,9 +1,3 @@
-import sys
-import os
-
-# Forza Python a vedere la cartella corrente come sorgente dei moduli
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
 # Importazione funzioni
 import engine.embedding_utils as emb
 
