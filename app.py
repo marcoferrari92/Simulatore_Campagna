@@ -111,10 +111,10 @@ if st.button("🚀 Avvia Analisi Strategica") and uploaded_file and campaign_tex
             results.append({
                 "Azienda": row.get('nome', f"Azienda {i}"),
                 "Score Finale": round(score_finale, 1),
+                f"Score P.1": voti["v1"],
+                f"Score P.2": voti["v2"],
+                f"Score P.3": voti["v3"],
                 "Analisi": motivo,
-                f"Match {p1_label}": voti["v1"],
-                f"Match {p2_label}": voti["v2"],
-                f"Match {p3_label}": voti["v3"],
                 "Affinità (%)": round(sim * 100, 1)
             })
             progress_bar.progress((i + 1) / len(df))
@@ -124,7 +124,7 @@ if st.button("🚀 Avvia Analisi Strategica") and uploaded_file and campaign_tex
 status_text.success("✅ Analisi Completata!")
 res_df = pd.DataFrame(results).sort_values(by="Score Finale", ascending=False)
 st.subheader("🏆 Ranking Lead Strategici")
-st.dataframe(res_df, use_container_width=True)
+st.dataframe(res_df, use_container_width=True, hide_index=True)
             
 # Grafico
 st.divider()
