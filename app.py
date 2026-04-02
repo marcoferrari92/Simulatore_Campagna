@@ -46,10 +46,17 @@ with st.sidebar.expander("Personalizza Comportamento AI", expanded=False):
     temp = st.slider("Temperature (Creatività)", min_value=0.0, max_value=1.0, value=0.0, step=0.1)
 
 # --- UI PRINCIPALE ---
-st.title("🏢 Business Campaign Matcher JSON Pro")
+st.title("Analizzatore campagne marketing")
+
+# Box informativo con elenco puntato
+st.info(" Segui questi passaggi per configurare l'analisi:")
+
 st.markdown(f"""
-**Istruzioni:** Carica un file `.json` che contenga una lista di oggetti. 
-Le chiavi devono corrispondere ai nomi dei parametri nella sidebar (es: `{p1_label}`, `{p2_label}`, `{p3_label}`).
+1. **Chiave API**: Inserisci la tua **OpenAI API Key** nel campo dedicato in basso nella barra laterale.
+2. **Database Clienti**: Carica il file `.json` contenente l'elenco delle aziende.
+3. **Campagna**: Incolla il testo della tua **campagna marketing** o newsletter nel riquadro a destra.
+4. **Parametri e Pesi**: Definisci i nomi dei parametri (es. *{p1_label}*, *{p2_label}*) e regola la loro importanza tramite gli slider.
+5. **AI Agent**: Se necessario, espandi la sezione "Personalizza Comportamento AI" per modificare il ruolo o i criteri di valutazione dell'agente.
 """)
 
 col1, col2 = st.columns(2)
