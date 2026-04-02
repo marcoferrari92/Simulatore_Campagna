@@ -70,11 +70,11 @@ if st.button("Avvia Analisi Strategica") and uploaded_file and newsletter_text a
         results = []
         
         # Embedding Newsletter
-        news_vec = emb.get_embedding(newsletter_text)
+        news_vec = emb.get_embedding(client,newsletter_text)
         
         for i, row in df.iterrows():
             # Calcolo Embedding e LLM
-            azi_vec = emb.get_embedding(row['Descrizione'])
+            azi_vec = emb.get_embedding(client,row['Descrizione'])
             sim = cosine_similarity([news_vec], [azi_vec])[0][0]
             score, motivo = valuta_llm(client, newsletter_text, row['Nome'], row['Descrizione'])
             
