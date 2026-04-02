@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Iportazione funzioni
-import library.embedding_utils as emb
+import engine.embedding_utils as emb
 
 # Configurazione Pagina
 st.set_page_config(page_title="Analizzatore Newsletter", layout="wide")
