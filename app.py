@@ -123,8 +123,20 @@ if st.button("🚀 Avvia Analisi Strategica") and uploaded_file and campaign_tex
             
 status_text.success("✅ Analisi Completata!")
 res_df = pd.DataFrame(results).sort_values(by="Score Finale", ascending=False)
-st.subheader("🏆 Ranking Lead Strategici")
-st.dataframe(res_df, use_container_width=True, hide_index=True)
+
+if not res_df.empty:
+    st.subheader("🏆 Ranking Lead Strategici")
+    
+    # Creiamo uno stile: 
+    # - Evidenziamo la colonna 'Score Finale' con un gradiente (da giallo a verde)
+    # - Arrotondiamo a 1 decimale
+    styled_df = res_df.style.background_gradient(
+        subset=['Score Finale'], 
+        cmap='YlGn' # Yellow to Green: più è alto, più è verde
+    ).format({"Score Finale": "{:.1f}"})
+
+    # Visualizziamo il DataFrame stilizzato
+    st.dataframe(styled_df, use_container_width=True, hide_index=True)
             
 # Grafico
 st.divider()
