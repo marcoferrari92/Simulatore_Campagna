@@ -16,5 +16,5 @@ def get_embedding(client, text, verbose=False):
         print(f"FILTERED: {clean_text[:100]}...")
         print(f"--------------------\n")
 
-    response = client.embeddings.create(model="text-embedding-3-large", input=clean_text)
+    response = client.embeddings.create(model="text-embedding-3-small", input=clean_text)
     return response.data[0].embedding
