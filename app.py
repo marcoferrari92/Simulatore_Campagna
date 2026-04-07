@@ -42,7 +42,7 @@ with st.sidebar.expander("Personalizza Comportamento AI", expanded=False):
     ai_role = st.text_area("AI Role", value="Sei un consulente aziendale esperto. Valuta l'interesse pratico.")
     ai_task = st.text_area("AI Task", value="Analizza se questa azienda è interessata a ricevere questa campagna.")
     eval_criteria = st.text_area("Criteri di Valutazione", value="- L'argomento è critico per l'operatività?\n- L'azienda deve applicare queste normative?")
-    max_words = st.number_input("Max parole (Motivo)", min_value=5, max_value=100, value=15)
+    max_words = st.number_input("Max parole (Motivo)", min_value=5, max_value=100, value=50)
     temp = st.slider("Temperature (Creatività)", min_value=0.0, max_value=1.0, value=0.0, step=0.1)
 
 # --- UI PRINCIPALE ---
