@@ -213,13 +213,22 @@ if not res_df.empty:
         ax=ax
     )
 
-    # 4. TRUCCO PER IL TRATTEGGIO:
-    # Cerchiamo la linea che si chiama "TOTAL SCORE" tra quelle create e la modifichiamo
-    for line in ax.get_lines():
-        if line.get_label() == "TOTAL SCORE":
-            line.set_linestyle("--") # La rendiamo tratteggiata
-            line.set_linewidth(4)    # La rendiamo più spessa
-            line.set_color("black")  # La rendiamo nera per farla risaltare
+    # 4. TRUCCO PER IL TRATTEGGIO E SPESSORE (Basato sull'ordine):
+    lines = ax.get_lines()
+    
+    # In Seaborn con 'hue', l'ultima categoria disegnata è solitamente la prima o l'ultima della lista.
+    # Proviamo a scansionarle tutte e ad applicare la modifica dove il colore è quello del TOTAL SCORE
+    # o più semplicemente, se sai che è l'ultimo aggiunto:
+    
+    for line in lines:
+        # Debug facoltativo: print(f"Linea trovata: {line.get_label()}") 
+        # Se il label è "TOTAL SCORE" (o se è l'ultima linea della lista)
+        if "TOTAL SCORE" in line.get_label():
+            line.set_linestyle("--")
+            line.set_linewidth(6)      # Qui aumenti lo spessore (es. 6 o 8)
+            line.set_color("black")
+            line.set_alpha(1.0)
+            line.set_zorder(5)         # La porta in primo piano
 
     # Estetica finale
     ax.set_xlim(0, 100)
