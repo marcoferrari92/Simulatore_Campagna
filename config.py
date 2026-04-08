@@ -12,8 +12,8 @@ HELP_CALCOLO_PESI = """
   """
 
 HELP_GENERALE = """
-1. **Chiave API**: Inserisci la tua **OpenAI API Key** nel campo dedicato in basso nella barra laterale.
-2. **Database Clienti**: Carica il file `.json` contenente l'elenco delle aziende.
+1. **Chiave API**: Inserisci la tua **OpenAI API Key** nel campo dedicato nella barra laterale.
+2. **Database Clienti**: Carica il file `.json` del tuo database aziende.
 3. **Campagna**: Incolla il testo della tua **campagna marketing** o newsletter nel riquadro a destra.
 4. **Parametri e Pesi**: Definisci i parametri e regola la loro importanza tramite gli slider.
 5. **AI Agent**: Se necessario, espandi la sezione "Personalizza Comportamento AI" per modificare il ruolo, il task o i criteri di valutazione dell'agente AI.
