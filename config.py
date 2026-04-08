@@ -16,7 +16,7 @@ HELP_GENERALE = """
 2. **Database Clienti**: Carica il file `.json` del tuo database aziende.
 3. **Campagna**: Incolla il testo della tua **campagna marketing** o newsletter nel riquadro a destra.
 4. **Parametri e Pesi**: Definisci i parametri e regola la loro importanza tramite gli slider.
-5. **AI Agent**: Se necessario, espandi la sezione "Personalizza Comportamento AI" per modificare il ruolo, il task o i criteri di valutazione dell'agente AI.
+5. **AI Agent**: Se necessario, espandi la sezione "Modifica Comportamento AI" per modificare il ruolo, il task o i criteri di valutazione dell'agente AI.
 """
 
 
