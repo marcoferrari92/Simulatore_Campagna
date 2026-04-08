@@ -7,6 +7,7 @@ from openai import OpenAI
 from sklearn.metrics.pairwise import cosine_similarity
 import engine.embedding_utils as emb
 import engine.llm_utils as llm 
+import config
 
 # --- 1. INIZIALIZZAZIONE SESSION STATE ---
 if "raw_results" not in st.session_state:
@@ -26,7 +27,7 @@ with st.sidebar.expander("Modifica Comportamento AI (Richiede nuovo avvio)"):
 st.sidebar.divider()
 st.sidebar.header("🎛️ Bilanciamento Dinamico")
 with st.sidebar.popover("💡Come funziona il calcolo?"):
-     st.markdown(config.UI_TEXTS.CALCOLO_PESI)
+     st.markdown(config.HELP_CALCOLO_PESI)
 
 # Pesi per il mix finale (AI vs Similarità)
 st.sidebar.subheader("Mix Finale")
