@@ -150,3 +150,41 @@ if not res_df.empty:
     fig, ax = plt.subplots(figsize=(10, 4))
     sns.barplot(x="Score Finale", y="Azienda", data=res_df.head(10), palette="viridis", ax=ax)
     st.pyplot(fig)
+
+if not res_df.empty:
+    st.divider()
+    st.subheader("📊 Distribuzione dei Punteggi AI")
+    st.caption("Visualizza come i voti dell'agente si distribuiscono tra i vari parametri analizzati.")
+
+    # Creiamo 5 colonne per i 5 istogrammi dei parametri AI
+    hist_cols = st.columns(5)
+    
+    # Mappatura parametri per i grafici
+    metrics = [
+        ("Descrizione", "v_desc", "Blues"),
+        ("Geografia", "v_geo", "Reds"),
+        ("Dipendenti", "v_dip", "Greens"),
+        ("Fatturato", "v_fat", "Oranges"),
+        ("Settore", "v_ateco", "Purples")
+    ]
+
+    for col, (label, col_name, color) in zip(hist_cols, metrics):
+        with col:
+            fig, ax = plt.subplots(figsize=(4, 3))
+            # Creiamo l'istogramma
+            sns.histplot(res_df[col_name], bins=10, kde=True, color=color[:color.find('s')].lower(), ax=ax)
+            
+            # Pulizia estetica del grafico
+            ax.set_title(label, fontsize=12)
+            ax.set_xlabel("Voto", fontsize=10)
+            ax.set_ylabel("Frequenza", fontsize=10)
+            ax.set_xlim(0, 100) # Tutti i voti sono 0-100
+            
+            st.pyplot(fig)
+
+    # Manteniamo il grafico del Ranking finale sotto
+    st.divider()
+    st.subheader("📊 Top 10 Lead (Score Finale)")
+    fig_rank, ax_rank = plt.subplots(figsize=(10, 4))
+    sns.barplot(x="Score Finale", y="Azienda", data=res_df.head(10), palette="viridis", ax=ax_rank)
+    st.pyplot(fig_rank)
