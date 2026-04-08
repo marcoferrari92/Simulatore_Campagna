@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from openai import OpenAI
+import plotly.express as px
 from sklearn.metrics.pairwise import cosine_similarity
 import engine.embedding_utils as emb
 import engine.llm_utils as llm 
@@ -50,6 +51,26 @@ if total_sum > 0:
     wa1, wa2, wa3, wa4, wa5 = w_desc/total_sum, w_geo/total_sum, w_dip/total_sum, w_fat/total_sum, w_ateco/total_sum
 else:
     wa1 = wa2 = wa3 = wa4 = wa5 = 0.2
+
+st.sidebar.subheader("📊 Bilanciamento Pesi")
+# Prepariamo i dati per il radar
+radar_data = pd.DataFrame(dict(
+    r=[wa1, wa2, wa3, wa4, wa5],
+    theta=['Desc.', 'Geo.', 'Dip.', 'Fatt.', 'Settore']
+))
+
+fig_radar = px.line_polar(radar_data, r='r', theta='theta', line_close=True)
+fig_radar.update_traces(fill='toself', line_color='#2ecc71')
+fig_radar.update_layout(
+    polar=dict(
+        radialaxis=dict(visible=True, range=[0, 1], showticklabels=False),
+    ),
+    showlegend=False,
+    margin=dict(l=20, r=20, t=20, b=20),
+    height=200
+)
+
+st.sidebar.plotly_chart(fig_radar, use_container_width=True, config={'displayModeBar': False})
 
 with st.sidebar.expander("📊 Quote Percentuali Reali", expanded=True):
     st.write(f"Descrizione: **{wa1:.0%}** | Geografia: **{wa2:.0%}**")
