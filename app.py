@@ -144,13 +144,21 @@ else:
 # --- 7. VISUALIZZAZIONE RISULTATI ---
 st.divider()
 st.subheader("🏆 Classifica Lead Intelligente")
+st.caption(config.WARNING_TAB)
 
 if not res_df.empty:
+    # --- 1. MOSTRA LA TABELLA (Mancava qui!) ---
+    st.dataframe(
+        display_df.style.background_gradient(subset=['Score Finale'], cmap='YlGn'), 
+        use_container_width=True, 
+        hide_index=True
+    )
+
+    # --- 2. MOSTRA IL GRAFICO ---
     st.divider()
     st.subheader("📊 Comparazione scores")
     st.caption("Il grafico mostra dove si concentra la densità dei voti per ogni parametro. Più alta è la curva, più aziende hanno ricevuto quel punteggio.")
 
-    # Mapping per nomi leggibili
     column_mapping = {
         "v_desc": "Descrizione",
         "v_geo": "Geografia",
@@ -159,35 +167,33 @@ if not res_df.empty:
         "v_ateco": "Settore"
     }
     
-    # Prepariamo i dati (Long-form)
     df_plot = res_df[list(column_mapping.keys())].rename(columns=column_mapping)
     df_melted = df_plot.melt(var_name='Parametro', value_name='Voto')
     df_melted["Voto"] = pd.to_numeric(df_melted["Voto"], errors='coerce').fillna(0)
 
     fig, ax = plt.subplots(figsize=(12, 6))
 
-    # Usiamo kdeplot invece di histplot per avere solo le curve
     sns.kdeplot(
         data=df_melted, 
         x="Voto", 
         hue="Parametro", 
-        fill=True,         # Riempie l'area sotto la curva
-        common_norm=False,  # Indipendenza tra le scale dei parametri
+        fill=True,         
+        common_norm=False,  
         palette="bright", 
-        alpha=0.2,         # Trasparenza per vedere le sovrapposizioni
-        linewidth=2.5,     # Spessore della linea della curva
+        alpha=0.2,         
+        linewidth=2.5,     
         ax=ax
     )
 
-    # Personalizzazione estetica
     ax.set_xlim(0, 100)
     ax.set_title("Distribuzione dei Giudizi AI", fontsize=16)
     ax.set_xlabel("Voto", fontsize=12)
-    ax.set_ylabel("Conteggio aziende", fontsize=12)
+    ax.set_ylabel("Densità (Frequenza)", fontsize=12)
     ax.grid(axis='both', linestyle='--', alpha=0.3)
 
     st.pyplot(fig)
 
 else:
+    # Questa parte viene eseguita solo all'avvio (tabella vuota)
     st.dataframe(display_df, use_container_width=True, hide_index=True)
     st.info("In attesa di dati... Carica un file e clicca su 'Avvia Analisi'.")
