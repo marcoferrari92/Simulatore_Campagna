@@ -147,7 +147,7 @@ st.subheader("🏆 Classifica Lead Intelligente")
 
 if not res_df.empty:
     st.divider()
-    st.subheader("📊 Analisi Comparativa delle Curve di Densità")
+    st.subheader("📊 Comparazione scores")
     st.caption("Il grafico mostra dove si concentra la densità dei voti per ogni parametro. Più alta è la curva, più aziende hanno ricevuto quel punteggio.")
 
     # Mapping per nomi leggibili
@@ -181,9 +181,9 @@ if not res_df.empty:
 
     # Personalizzazione estetica
     ax.set_xlim(0, 100)
-    ax.set_title("Distribuzione dei Giudizi AI (Solo Curve KDE)", fontsize=16)
-    ax.set_xlabel("Voto (0-100)", fontsize=12)
-    ax.set_ylabel("Densità", fontsize=12)
+    ax.set_title("Distribuzione dei Giudizi AI", fontsize=16)
+    ax.set_xlabel("Voto", fontsize=12)
+    ax.set_ylabel("Conteggio aziende", fontsize=12)
     ax.grid(axis='both', linestyle='--', alpha=0.3)
 
     st.pyplot(fig)
