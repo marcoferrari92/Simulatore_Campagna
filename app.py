@@ -147,37 +147,37 @@ st.subheader("🏆 Classifica Lead Intelligente")
 st.caption(config.WARNING_TAB)
 
 if not res_df.empty:
-    # Applichiamo lo stile sfumato (display_df ora esiste sicuramente)
-    st.dataframe(
-        display_df.style.background_gradient(subset=['Score Finale'], cmap='YlGn'), 
-        use_container_width=True, 
-        hide_index=True
-    )
-    
-    # --- LOGICA ISTOGRAMMI A 2 COLONNE ---
     st.divider()
-    st.subheader("📊 Distribuzione dei Punteggi AI")
-    metrics = [
-        ("Descrizione", "v_desc", "Blues"), ("Geografia", "v_geo", "Reds"),
-        ("Dipendenti", "v_dip", "Greens"), ("Fatturato", "v_fat", "Oranges"),
-        ("Settore", "v_ateco", "Purples")
-    ]
-    for i in range(0, len(metrics), 2):
-        row_cols = st.columns(2)
-        with row_cols[0]:
-            label, col_n, color = metrics[i]
-            fig, ax = plt.subplots(figsize=(8, 5))
-            sns.histplot(res_df[col_n], bins=10, kde=True, color=color[:-1].lower(), ax=ax)
-            ax.set_title(label)
-            st.pyplot(fig)
-        if i + 1 < len(metrics):
-            with row_cols[1]:
-                label, col_n, color = metrics[i+1]
-                fig, ax = plt.subplots(figsize=(8, 5))
-                sns.histplot(res_df[col_n], bins=10, kde=True, color=color[:-1].lower(), ax=ax)
-                ax.set_title(label)
-                st.pyplot(fig)
-else:
-    # Se i dati non ci sono ancora, display_df è vuoto ma definito: l'errore sparisce
-    st.dataframe(display_df, use_container_width=True, hide_index=True)
-    st.info("In attesa di dati... Carica un file e clicca su 'Avvia Analisi'.")
+    st.subheader("📈 Profilo Comparativo dei Lead (Top 5)")
+    st.caption("Ogni linea rappresenta un'azienda. I punti indicano il voto assegnato dall'AI per ogni specifico parametro.")
+
+    # Prepariamo i dati: prendiamo le prime 5 aziende della classifica per non affollare il grafico
+    top_n = 5
+    df_plot = res_df.head(top_n)
+
+    # Parametri da mappare sull'asse X
+    labels = ["Descrizione", "Geografia", "Dipendenti", "Fatturato", "Settore"]
+    column_names = ["v_desc", "v_geo", "v_dip", "v_fat", "v_ateco"]
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+
+    # Iteriamo sulle righe per disegnare una curva per ogni azienda
+    for idx, row in df_plot.iterrows():
+        values = [row[c] for c in column_names]
+        
+        # Disegniamo la linea con i punti
+        line = ax.plot(labels, values, marker='o', linewidth=2, label=row['Azienda'])
+        
+        # Opzionale: riempiamo leggermente l'area sotto la linea (effetto area chart)
+        ax.fill_between(labels, values, alpha=0.1)
+
+    # Personalizzazione estetica
+    ax.set_ylim(0, 105)
+    ax.set_ylabel("Punteggio AI (0-100)", fontsize=12)
+    ax.set_title("Analisi Multidimensionale dei Top Lead", fontsize=16, pad=20)
+    ax.grid(True, linestyle='--', alpha=0.6)
+    
+    # Spostiamo la legenda fuori dal grafico per pulizia
+    ax.legend(title="Aziende", bbox_to_anchor=(1.05, 1), loc='upper left')
+
+    st.pyplot(fig)
