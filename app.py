@@ -31,7 +31,7 @@ with st.sidebar.popover("💡Come funziona il calcolo?"):
 
 # Pesi per il mix finale (AI vs Similarità)
 st.sidebar.subheader("Mix Finale")
-weight_ai = st.sidebar.slider("Peso Giudizio Globale AI", 0.0, 1.0, 0.7, step=0.05)
+weight_ai = st.sidebar.slider("Peso Giudizio Globale AI", 0.0, 1.0, config.Giudizio_AI, step=0.05)
 weight_sim = 1.0 - weight_ai
 
 # Pesi per comporre lo Score AI (wa1-wa4)
