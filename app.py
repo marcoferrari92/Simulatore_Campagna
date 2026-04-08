@@ -27,7 +27,6 @@ st.sidebar.divider()
 st.sidebar.header("🎛️ Bilanciamento Dinamico")
 
 # Pesi per il mix finale (AI vs Similarità)
-st.sidebar.divider()
 st.sidebar.subheader("Mix Finale")
 weight_ai = st.sidebar.slider("Peso Giudizio Globale AI", 0.0, 1.0, 0.7, step=0.05)
 weight_sim = 1.0 - weight_ai
