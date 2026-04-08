@@ -141,7 +141,7 @@ else:
 # --- 7. VISUALIZZAZIONE RISULTATI (Sempre visibile) ---
 st.divider()
 st.subheader("🏆 Classifica Lead Intelligente")
-st.caption("Muovi gli slider dei pesi per ricalcolare la classifica istantaneamente senza analizzare nuovamente il database")
+st.caption(config.WARNING_TAB)
     
 # La tabella sarà sempre visibile. Se res_df è vuoto, mostrerà solo le intestazioni.
 st.dataframe(
