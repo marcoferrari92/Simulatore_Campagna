@@ -26,7 +26,7 @@ with st.sidebar.expander("Modifica Comportamento AI (Richiede nuovo avvio)"):
 st.sidebar.divider()
 st.sidebar.header("🎛️ Bilanciamento Dinamico")
 st.sidebar.info(
-    "💡 **Nota:** L'agente AI assegna un punteggio indipendente a ciascun parametro."
+    "💡L'agente AI assegna un punteggio indipendente a ciascun parametro."
     " Puoi modificare i pesi in **tempo reale** dopo l'analisi per ricalcolare istantaneamente lo "
     "score finale, senza effettuare nuove chiamate API e analisi del database"
 )
