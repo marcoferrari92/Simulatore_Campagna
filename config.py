@@ -6,9 +6,9 @@ DEFAULT_CAMPAIGN = """Siamo leader nella fornitura di soluzioni software per l'a
 # Testi informativi UI
 HELP_CALCOLO_PESI = """
     **Logica di Valutazione:**
-    1. L'agente AI analizza ogni azienda e assegna un **punteggio indipendente** a ciascun parametro.
-    2. Questi voti vengono salvati "grezzi" nel sistema.
-    3. Dopo l'analisi del database, puoi modificare i pesi in **tempo reale**: lo score finale viene ricalcolato istantaneamente senza nuove chiamate API e analisi del database.
+    1. L'agente AI analizza ogni azienda del database e assegna un **punteggio indipendente** a ciascun parametro.
+    2. Questi voti vengono salvati nel sistema e usati a fine analisi per calcolare lo **score finale** per ogni azienda.
+    3. Dopo l'analisi del database, puoi comunque modificare nuovamente i pesi in **tempo reale**: lo score finale viene ricalcolato istantaneamente senza nuove chiamate API e analisi del database.
   """
 
 WARNING_CREDITS = "⚠️ **Attenzione:** L'avvio dell'analisi comporterà l'invio di dati alle API di OpenAI e il relativo consumo di crediti (Token)."
