@@ -39,7 +39,7 @@ with st.sidebar.expander("Personalizza Comportamento AI", expanded=False):
     temp = st.slider("Creatività (temp.)", min_value=0.0, max_value=1.0, value=0.0, step=0.1)
 
 # --- UI PRINCIPALE ---
-st.title("🎯 Target Discovery AI")
+st.title("Analizzatore campagna marketing")
 
 # Box informativo con elenco puntato
 st.info(" Segui questi passaggi per configurare l'analisi:")
