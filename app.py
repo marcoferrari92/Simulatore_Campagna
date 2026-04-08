@@ -36,11 +36,20 @@ with st.sidebar.expander("Personalizza Comportamento AI", expanded=False):
     ai_task = st.text_area("AI Task", value="Valuta la compatibilità tra la campagna e il profilo aziendale.")
     eval_criteria = st.text_area("Criteri di Valutazione", value="- Coerenza settoriale\n- Rilevanza geografica\n- Capacità finanziaria/dimensionale")
     max_words = st.number_input("Max parole (Motivo)", min_value=5, max_value=100, value=25)
-    temp = st.slider("Temperature", min_value=0.0, max_value=1.0, value=0.0, step=0.1)
+    temp = st.slider("Creatività (temp.)", min_value=0.0, max_value=1.0, value=0.0, step=0.1)
 
 # --- UI PRINCIPALE ---
 st.title("🎯 Target Discovery AI")
-st.info("L'analisi ora include dati geografici, finanziari e codici ATECO.")
+
+# Box informativo con elenco puntato
+st.info(" Segui questi passaggi per configurare l'analisi:")
+st.markdown(f"""
+1. **Chiave API**: Inserisci la tua **OpenAI API Key** nel campo dedicato in basso nella barra laterale.
+2. **Database Clienti**: Carica il file `.json` contenente l'elenco delle aziende.
+3. **Campagna**: Incolla il testo della tua **campagna marketing** o newsletter nel riquadro a destra.
+4. **Parametri e Pesi**: Definisci i nomi dei parametri (es. *{p1_label}*, *{p2_label}*) e regola la loro importanza tramite gli slider.
+5. **AI Agent**: Se necessario, espandi la sezione "Personalizza Comportamento AI" per modificare il ruolo o i criteri di valutazione dell'agente.
+""")
 
 col1, col2 = st.columns(2)
 with col1:
