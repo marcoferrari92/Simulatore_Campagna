@@ -138,27 +138,45 @@ else:
 st.divider()
 st.subheader("🏆 Classifica Lead Intelligente")
 st.caption(config.WARNING_TAB)
-    
-st.dataframe(
-    res_df.style.background_gradient(subset=['Score Finale'], cmap='YlGn') if not res_df.empty else res_df,
-    use_container_width=True, 
-    hide_index=True
-)
 
 if not res_df.empty:
-    st.subheader("📊 Top 10 Lead")
-    fig, ax = plt.subplots(figsize=(10, 4))
-    sns.barplot(x="Score Finale", y="Azienda", data=res_df.head(10), palette="viridis", ax=ax)
-    st.pyplot(fig)
+    # Applichiamo lo stile sfumato sulla colonna 'Score Finale'
+    # Puoi aggiungere altre colonne alla lista 'subset' se vuoi colorare anche quelle
+    styled_df = res_df[display_df.columns].style.background_gradient(
+        subset=['Score Finale'], 
+        cmap='YlGn'  # Dal giallo al verde
+    ).format(precision=1)
+    
+    st.dataframe(styled_df, use_container_width=True, hide_index=True)
+    
+    # --- Sezione Istogrammi (aggiunta precedentemente) ---
+    st.divider()
+    st.subheader("📊 Distribuzione dei Punteggi AI")
+    hist_cols = st.columns(5)
+    metrics = [
+        ("Descrizione", "v_desc", "Blues"),
+        ("Geografia", "v_geo", "Reds"),
+        ("Dipendenti", "v_dip", "Greens"),
+        ("Fatturato", "v_fat", "Oranges"),
+        ("Settore", "v_ateco", "Purples")
+    ]
+    for col, (label, col_name, color) in zip(hist_cols, metrics):
+        with col:
+            fig, ax = plt.subplots(figsize=(4, 3))
+            sns.histplot(res_df[col_name], bins=10, kde=True, color=color[:-1].lower(), ax=ax)
+            ax.set_title(label)
+            ax.set_xlim(0, 100)
+            st.pyplot(fig)
+else:
+    # Tabella vuota (senza stile perché non ci sono valori numerici su cui calcolare il gradiente)
+    st.dataframe(display_df, use_container_width=True, hide_index=True)
+    st.info("In attesa di dati... Carica un file e clicca su 'Avvia Analisi'.")
 
 if not res_df.empty:
     st.divider()
     st.subheader("📊 Distribuzione dei Punteggi AI")
     st.caption("Visualizza come i voti dell'agente si distribuiscono tra i vari parametri analizzati.")
 
-    # Creiamo 5 colonne per i 5 istogrammi dei parametri AI
-    hist_cols = st.columns(5)
-    
     # Mappatura parametri per i grafici
     metrics = [
         ("Descrizione", "v_desc", "Blues"),
@@ -168,23 +186,25 @@ if not res_df.empty:
         ("Settore", "v_ateco", "Purples")
     ]
 
-    for col, (label, col_name, color) in zip(hist_cols, metrics):
-        with col:
-            fig, ax = plt.subplots(figsize=(4, 3))
-            # Creiamo l'istogramma
-            sns.histplot(res_df[col_name], bins=10, kde=True, color=color[:color.find('s')].lower(), ax=ax)
-            
-            # Pulizia estetica del grafico
-            ax.set_title(label, fontsize=12)
-            ax.set_xlabel("Voto", fontsize=10)
-            ax.set_ylabel("Frequenza", fontsize=10)
-            ax.set_xlim(0, 100) # Tutti i voti sono 0-100
-            
+    # Iteriamo sui parametri a gruppi di 2
+    for i in range(0, len(metrics), 2):
+        cols = st.columns(2) # Crea due colonne per ogni riga
+        
+        # Grafico 1 della riga corrente
+        with cols[0]:
+            label, col_name, color = metrics[i]
+            fig, ax = plt.subplots(figsize=(8, 5)) # Leggermente più grande essendo in 2 colonne
+            sns.histplot(res_df[col_name], bins=10, kde=True, color=color[:-1].lower(), ax=ax)
+            ax.set_title(label, fontsize=14)
+            ax.set_xlim(0, 100)
             st.pyplot(fig)
 
-    # Manteniamo il grafico del Ranking finale sotto
-    st.divider()
-    st.subheader("📊 Top 10 Lead (Score Finale)")
-    fig_rank, ax_rank = plt.subplots(figsize=(10, 4))
-    sns.barplot(x="Score Finale", y="Azienda", data=res_df.head(10), palette="viridis", ax=ax_rank)
-    st.pyplot(fig_rank)
+        # Grafico 2 della riga corrente (se esiste)
+        if i + 1 < len(metrics):
+            with cols[1]:
+                label, col_name, color = metrics[i+1]
+                fig, ax = plt.subplots(figsize=(8, 5))
+                sns.histplot(res_df[col_name], bins=10, kde=True, color=color[:-1].lower(), ax=ax)
+                ax.set_title(label, fontsize=14)
+                ax.set_xlim(0, 100)
+                st.pyplot(fig)
