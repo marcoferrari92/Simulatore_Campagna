@@ -132,7 +132,7 @@ if not res_df.empty:
         (res_df["v_ateco"] * wa5)
     ).round(1)
     
-    res_df["Affinità %"] = (pd.to_numeric(res_df["Sim_Raw"], errors='coerce').fillna(0) * 100).round(1)
+    res_df["Affinità"] = (pd.to_numeric(res_df["Sim_Raw"], errors='coerce').fillna(0) * 100).round(1)
     res_df["Score Finale"] = (res_df["Score AI"] * weight_ai) + (res_df["Affinità"] * weight_sim)
     res_df["Score Finale"] = res_df["Score Finale"].round(1)
     
