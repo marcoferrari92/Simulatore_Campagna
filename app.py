@@ -146,13 +146,11 @@ st.divider()
 st.subheader("🏆 Classifica Lead Intelligente")
 
 if not res_df.empty:
-    st.dataframe(display_df.style.background_gradient(subset=['Score Finale'], cmap='YlGn'), use_container_width=True, hide_index=True)
-    
-    # --- GRAFICO UNICO DI DISTRIBUZIONE (OVERLAY) ---
     st.divider()
-    st.subheader("📊 Analisi Comparativa delle Distribuzioni")
-    
-    # Mapping per nomi leggibili nel grafico
+    st.subheader("📊 Analisi Comparativa delle Curve di Densità")
+    st.caption("Il grafico mostra dove si concentra la densità dei voti per ogni parametro. Più alta è la curva, più aziende hanno ricevuto quel punteggio.")
+
+    # Mapping per nomi leggibili
     column_mapping = {
         "v_desc": "Descrizione",
         "v_geo": "Geografia",
@@ -161,38 +159,33 @@ if not res_df.empty:
         "v_ateco": "Settore"
     }
     
-    # Prepariamo i dati per il grafico assicurandoci che siano puliti
-    df_temp = res_df[list(column_mapping.keys()) + ["Azienda"]].copy()
-    df_temp = df_temp.rename(columns=column_mapping)
-    
-    df_melted = df_temp.melt(
-        id_vars=['Azienda'], 
-        var_name='Parametro', 
-        value_name='Voto'
-    )
-    
-    # FORZATURA NUMERICA: fondamentale per evitare il tuo errore
-    df_melted["Voto"] = pd.to_numeric(df_melted["Voto"], errors='coerce')
-    
+    # Prepariamo i dati (Long-form)
+    df_plot = res_df[list(column_mapping.keys())].rename(columns=column_mapping)
+    df_melted = df_plot.melt(var_name='Parametro', value_name='Voto')
+    df_melted["Voto"] = pd.to_numeric(df_melted["Voto"], errors='coerce').fillna(0)
+
     fig, ax = plt.subplots(figsize=(12, 6))
-    
-    # Disegniamo l'istogramma unico
-    sns.histplot(
+
+    # Usiamo kdeplot invece di histplot per avere solo le curve
+    sns.kdeplot(
         data=df_melted, 
         x="Voto", 
         hue="Parametro", 
-        element="step", 
-        kde=True, 
+        fill=True,         # Riempie l'area sotto la curva
+        common_norm=False,  # Indipendenza tra le scale dei parametri
         palette="bright", 
-        alpha=0.1, 
+        alpha=0.2,         # Trasparenza per vedere le sovrapposizioni
+        linewidth=2.5,     # Spessore della linea della curva
         ax=ax
     )
-    
+
+    # Personalizzazione estetica
     ax.set_xlim(0, 100)
-    ax.set_title("Overlay delle distribuzioni per parametro", fontsize=15)
-    ax.set_xlabel("Voto (0-100)")
-    ax.set_ylabel("Frequenza (N. Aziende)")
-    
+    ax.set_title("Distribuzione dei Giudizi AI (Solo Curve KDE)", fontsize=16)
+    ax.set_xlabel("Voto (0-100)", fontsize=12)
+    ax.set_ylabel("Densità", fontsize=12)
+    ax.grid(axis='both', linestyle='--', alpha=0.3)
+
     st.pyplot(fig)
 
 else:
