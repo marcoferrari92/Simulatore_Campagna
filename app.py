@@ -179,28 +179,24 @@ if not res_df.empty:
     st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
     # --- 2. MOSTRA IL GRAFICO ---
+    if not res_df.empty:
     st.divider()
     st.subheader("📊 Analisi Comparativa delle Curve di Densità")
 
-    # 1. Aggiungiamo 'Score Finale' direttamente al mapping
     column_mapping = {
         "v_desc": "Descrizione",
         "v_geo": "Geografia",
         "v_dip": "Dipendenti",
         "v_fat": "Fatturato",
-        "v_ateco": "Settore",
-        "Score Finale": "TOTAL SCORE"  # <--- Lo aggiungiamo qui
+        "v_ateco": "Settore"
     }
     
-    # 2. Prepariamo i dati (ora includono anche il totale)
-    df_plot = res_df[list(column_mapping.keys())].rename(columns=column_mapping)
-    df_melted = df_plot.melt(var_name='Parametro', value_name='Voto')
-    df_melted["Voto"] = pd.to_numeric(df_melted["Voto"], errors='coerce').fillna(0)
-
     fig, ax = plt.subplots(figsize=(12, 6))
 
-    # 3. Disegniamo tutto in un colpo solo
-    # Seaborn creerà la legenda perfetta per noi
+    # 1. DISEGNIAMO LE CURVE DEI PARAMETRI (Sottili)
+    df_params = res_df[list(column_mapping.keys())].rename(columns=column_mapping)
+    df_melted = df_params.melt(var_name='Parametro', value_name='Voto')
+    
     sns.kdeplot(
         data=df_melted, 
         x="Voto", 
@@ -208,20 +204,30 @@ if not res_df.empty:
         fill=True,         
         common_norm=False,  
         palette="bright", 
-        alpha=0.15,         
-        linewidth=2,     
+        alpha=0.1,         
+        linewidth=1.5,     # Spessore standard per i parametri
         ax=ax
     )
 
-    # 4. TRUCCO PER IL TRATTEGGIO E SPESSORE:
-    for line in ax.get_lines():
-        if line.get_label() == "TOTAL SCORE":
-            line.set_linestyle("--")           # Tratteggio
-            line.set_linewidth(6)              # <--- AUMENTA QUESTO VALORE (es. da 4 a 6 o 8)
-            line.set_color("black")            # Colore nero
-            line.set_alpha(1.0)                # Forza l'opacità al massimo per farla risaltare
+    # 2. DISEGNIAMO LA CURVA FINALE (Separata, forzando lo spessore)
+    sns.kdeplot(
+        data=res_df, 
+        x="Score Finale", 
+        color="black", 
+        label="TOTAL SCORE",
+        linewidth=5.0,     # <--- AUMENTA QUI (es. 5.0, 6.0, 10.0 per testare)
+        linestyle="--",    # Tratteggiata
+        ax=ax,
+        zorder=10          # La porta "sopra" tutte le altre curve
+    )
 
-    # Estetica finale
+    # 3. FIX MANUALE LEGENDA (Per unire tutto)
+    handles, labels = ax.get_legend_handles_labels()
+    # Rimuoviamo eventuali duplicati
+    by_label = dict(zip(labels, handles))
+    ax.legend(by_label.values(), by_label.keys(), title="Legenda", loc='upper left')
+
+    # Estetica
     ax.set_xlim(0, 100)
     ax.set_title("Profilo di Distribuzione: Parametri vs Risultato Finale", fontsize=16)
     ax.set_xlabel("Voto (0-100)")
