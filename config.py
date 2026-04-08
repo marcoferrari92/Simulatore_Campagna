@@ -16,6 +16,7 @@ Sidebar_AI_Answer_Title = "Answer max words"
 TXT_DEFAULT_CAMPAIGN = """Newsletter che spiega nuovi DPI indispensabili per lo stoccaggio di materiali pericolosi o tossici, quali prodotti da reazioni chimiche, per un corso di formazione organizzato a Vicenza."""
 
 # Testi informativi UI
+HELP_PESI = "💡Come funziona il calcolo?"
 HELP_CALCOLO_PESI = """
     **Logica di Valutazione:**
     1. L'agente AI analizza ogni azienda del database e assegna un **punteggio indipendente** a ciascun parametro.
@@ -23,7 +24,8 @@ HELP_CALCOLO_PESI = """
     3. Dopo l'analisi del database, puoi comunque modificare nuovamente i pesi in **tempo reale**: lo score finale viene ricalcolato istantaneamente senza nuove chiamate API e analisi del database.
   """
 
-HELP_GENERALE = """
+HELP_Istruzioni = "💡Istruzioni"
+HELP_Generale = """
 1. **Chiave API**: Inserisci la tua **OpenAI API Key** nel campo dedicato nella barra laterale.
 2. **Database Clienti**: Carica il file `.json` del tuo database aziende.
 3. **Campagna**: Incolla il testo della tua **campagna marketing** o newsletter nel riquadro a destra.
