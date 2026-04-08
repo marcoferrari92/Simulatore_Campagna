@@ -1,7 +1,7 @@
 # config.py
 
 # Testi di default
-DEFAULT_CAMPAIGN = """Siamo leader nella fornitura di soluzioni software per l'automazione dei processi industriali e il monitoraggio energetico tramite AI."""
+DEFAULT_CAMPAIGN = """Newsletter che spiega nuovi DPI indispensabili per lo stoccaggio di materiali pericolosi o tossici, quali prodotti da reazioni chimiche, per un corso di formazione organizzato a Vicenza."""
 
 # Testi informativi UI
 HELP_CALCOLO_PESI = """
@@ -26,3 +26,4 @@ WARNING_CREDITS = "⚠️ **Attenzione:** L'avvio dell'analisi comporterà l'inv
 AI_ROLE_DEFAULT = "Sei un consulente aziendale esperto."
 AI_TASK_DEFAULT = "Valuta la compatibilità tra la campagna e il profilo aziendale."
 EVAL_CRITERIA_DEFAULT = "- Coerenza settoriale\n- Rilevanza geografica\n- Capacità finanziaria/dimensionale"
+
