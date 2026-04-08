@@ -115,7 +115,7 @@ st.warning(config.WARNING_CREDITS)
 # --- 6. LOGICA DI CALCOLO DINAMICO ---
 res_df = pd.DataFrame(st.session_state.raw_results)
 
-cols_da_mostrare = ["Azienda", "Score Finale", "Score AI", "Affinità %", "Settore", "Motivo"]
+cols_da_mostrare = ["Azienda", "Score Finale", "Score AI", "Affinità", "Settore", "Motivo"]
 
 if not res_df.empty:
     # 1. Assicuriamoci che i voti siano numerici prima di calcolare
