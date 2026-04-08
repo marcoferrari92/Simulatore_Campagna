@@ -51,7 +51,7 @@ with col1:
     uploaded_file = st.file_uploader("Carica Database JSON", type=["json"])
 with col2:
     # Definiamo il testo di default
-default_campaign = """Newsletter che spiega nuovi DPI indispensabili per lo stoccaggio di materiali pericolosi o tossici, quali prodotti da reazioni chimiche, per un corso di formazione organizzato a Vicenza."""
+    default_campaign = """Newsletter che spiega nuovi DPI indispensabili per lo stoccaggio di materiali pericolosi o tossici, quali prodotti da reazioni chimiche, per un corso di formazione organizzato a Vicenza."""
     campaign_text = st.text_area(
         "Testo Campagna:", 
         value=default_campaign,
