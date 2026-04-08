@@ -69,7 +69,7 @@ with col2:
     )
 
 # --- 5. ESECUZIONE ANALISI (Solo se cliccato il tasto) ---
-if st.button("🚀 Esegui Analisi AI (Consuma Crediti)"):
+if st.button("🚀 Esegui Analisi AI"):
     if not (uploaded_file and campaign_text and api_key):
         st.error("Compila tutti i campi prima di procedere.")
     else:
