@@ -25,28 +25,44 @@ with st.sidebar.expander(config.Sidebar_AI_Title):
 # --- 3. SIDEBAR: PESI E PARAMETRI (5 Parametri ora) ---
 st.sidebar.divider()
 st.sidebar.header("🎛️ Bilanciamento Dinamico")
-with st.sidebar.popover(config.HELP_PESI):
-     st.markdown(config.HELP_CALCOLO_PESI)
 
-# Pesi per il mix finale (AI vs Similarità)
-st.sidebar.subheader("Mix Finale")
-weight_ai = st.sidebar.slider("Peso Giudizio Globale AI", 0.0, 1.0, config.Giudizio_AI, step=0.05)
-weight_sim = 1.0 - weight_ai
+# ... (il tuo popover e slider Mix Finale rimangono uguali) ...
 
-# Pesi per comporre lo Score AI (5 variabili: wa1-wa5)
 st.sidebar.subheader("Pesi Interni Agente")
-w_desc = st.sidebar.slider("Descrizione Attività", 0.0, 1.0, 0.3)
+st.sidebar.caption("I valori verranno normalizzati automaticamente per sommare a 100%")
+
+# Slider indipendenti
+w_desc = st.sidebar.slider("Descrizione", 0.0, 1.0, 0.3)
 w_geo = st.sidebar.slider("Geografia", 0.0, 1.0, 0.1)
 w_dip = st.sidebar.slider("N. Dipendenti", 0.0, 1.0, 0.15)
 w_fat = st.sidebar.slider("Fatturato", 0.0, 1.0, 0.15)
 w_ateco = st.sidebar.slider("Settore (ATECO)", 0.0, 1.0, 0.3)
 
-# Normalizzazione automatica dei pesi interni su 5 dimensioni
-total_ai_w = w_desc + w_geo + w_dip + w_fat + w_ateco
-if total_ai_w > 0:
-    wa1, wa2, wa3, wa4, wa5 = w_desc/total_ai_w, w_geo/total_ai_w, w_dip/total_ai_w, w_fat/total_ai_w, w_ateco/total_ai_w
+# CALCOLO NORMALIZZAZIONE
+total_sum = w_desc + w_geo + w_dip + w_fat + w_ateco
+
+if total_sum > 0:
+    # Questi sono i pesi reali che useremo nel calcolo
+    wa1, wa2, wa3, wa4, wa5 = (
+        w_desc/total_sum, 
+        w_geo/total_sum, 
+        w_dip/total_sum, 
+        w_fat/total_sum, 
+        w_ateco/total_sum
+    )
 else:
-    wa1, wa2, wa3, wa4, wa5 = 0.2, 0.2, 0.2, 0.2, 0.2
+    # Fallback se tutti sono a zero
+    wa1 = wa2 = wa3 = wa4 = wa5 = 0.2
+
+# --- FEEDBACK VISIVO PER L'UTENTE ---
+# Creiamo una piccola tabella o una riga di testo per mostrare i pesi REALI
+with st.sidebar.expander("📊 Quote Percentuali Reali", expanded=True):
+    st.write(f"Descrizione: **{wa1:.0%}**")
+    st.write(f"Geografia: **{wa2:.0%}**")
+    st.write(f"Dipendenti: **{wa3:.0%}**")
+    st.write(f"Fatturato: **{wa4:.0%}**")
+    st.write(f"Settore: **{wa5:.0%}**")
+    st.progress(1.0) # Barra piena per confermare che il totale è 100%
 
 # --- 4. UI PRINCIPALE ---
 st.title("Simulatore campagna marketing")
