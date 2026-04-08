@@ -11,6 +11,15 @@ HELP_CALCOLO_PESI = """
     3. Dopo l'analisi del database, puoi comunque modificare nuovamente i pesi in **tempo reale**: lo score finale viene ricalcolato istantaneamente senza nuove chiamate API e analisi del database.
   """
 
+HELP_GENERALE = """
+1. **Chiave API**: Inserisci la tua **OpenAI API Key** nel campo dedicato in basso nella barra laterale.
+2. **Database Clienti**: Carica il file `.json` contenente l'elenco delle aziende.
+3. **Campagna**: Incolla il testo della tua **campagna marketing** o newsletter nel riquadro a destra.
+4. **Parametri e Pesi**: Definisci i parametri e regola la loro importanza tramite gli slider.
+5. **AI Agent**: Se necessario, espandi la sezione "Personalizza Comportamento AI" per modificare il ruolo, il task o i criteri di valutazione dell'agente AI.
+"""
+
+
 WARNING_CREDITS = "⚠️ **Attenzione:** L'avvio dell'analisi comporterà l'invio di dati alle API di OpenAI e il relativo consumo di crediti (Token)."
 
 # Configurazione Agente Default
