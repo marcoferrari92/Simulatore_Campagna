@@ -9,9 +9,9 @@ import engine.embedding_utils as emb
 import engine.llm_utils as llm 
 
 # --- 1. INIZIALIZZAZIONE SESSION STATE ---
-# Questo serve a mantenere i dati estratti dall'AI anche quando sposti gli slider
 if "raw_results" not in st.session_state:
-    st.session_state.raw_results = None
+    # Inizializziamo con una lista vuota invece di None per far funzionare la tabella da subito
+    st.session_state.raw_results = []
 
 # --- 2. SIDEBAR: PESI E PARAMETRI (Ricalcolo Istantaneo) ---
 st.sidebar.header("🎛️ Bilanciamento Dinamico")
@@ -105,12 +105,13 @@ if st.button("🚀 Esegui Analisi AI (Consuma Crediti)"):
         st.session_state.raw_results = results_storage
         status.success("Analisi completata! Ora puoi regolare i pesi a sinistra.")
 
-# --- 6. LOGICA DI CALCOLO DINAMICO (Sempre attiva se ci sono dati) ---
-if st.session_state.raw_results:
-    # Trasformiamo i dati salvati in un DataFrame locale
-    res_df = pd.DataFrame(st.session_state.raw_results)
-    
-    # Ricalcoliamo lo Score AI usando i pesi della sidebar (wa1, wa2...)
+# --- 6. LOGICA DI CALCOLO DINAMICO ---
+# Creiamo il DataFrame partendo dallo stato (che sarà vuoto all'inizio o pieno dopo l'analisi)
+res_df = pd.DataFrame(st.session_state.raw_results)
+
+# Verifichiamo se il DF ha dati per evitare errori di calcolo su colonne inesistenti
+if not res_df.empty:
+    # Ricalcolo Score AI
     res_df["Score AI"] = (
         (res_df["v_desc"] * wa1) + 
         (res_df["v_geo"] * wa2) + 
@@ -118,26 +119,24 @@ if st.session_state.raw_results:
         (res_df["v_ateco"] * wa4)
     ).round(1)
     
-    # Calcolo finale (Mix tra AI e Similarità)
+    # Calcolo finale
     res_df["Affinità %"] = (res_df["Sim_Raw"] * 100).round(1)
     res_df["Score Finale"] = (res_df["Score AI"] * weight_ai) + (res_df["Affinità %"] * weight_sim)
     res_df["Score Finale"] = res_df["Score Finale"].round(1)
-    
     res_df = res_df.sort_values(by="Score Finale", ascending=False)
+else:
+    # Se vuoto, creiamo le colonne di visualizzazione vuote per non far rompere la tabella
+    cols_vuote = ["Azienda", "Score Finale", "Score AI", "Affinità %", "Settore", "Motivo"]
+    res_df = pd.DataFrame(columns=cols_vuote)
 
-    # --- 7. VISUALIZZAZIONE RISULTATI ---
-    st.divider()
-    st.subheader("🏆 Ranking Ottimizzato")
-    st.caption("Muovi gli slider dei pesi per ricalcolare la classifica istantaneamente senza analizzare nuovamente il database")
+# --- 7. VISUALIZZAZIONE RISULTATI (Sempre visibile) ---
+st.divider()
+st.subheader("🏆 Classifica Lead Intelligente")
+st.caption("Muovi gli slider dei pesi per ricalcolare la classifica istantaneamente senza analizzare nuovamente il database")
     
-    # Formattazione e visualizzazione
-    display_df = res_df[["Azienda", "Score Finale", "Score AI", "Affinità %", "Settore", "Motivo"]]
-    st.dataframe(
-        display_df.style.background_gradient(subset=['Score Finale'], cmap='YlGn'),
-        use_container_width=True, hide_index=True
-    )
-    
-    # Grafico top 10
-    fig, ax = plt.subplots(figsize=(10, 4))
-    sns.barplot(x="Score Finale", y="Azienda", data=res_df.head(10), palette="viridis", ax=ax)
-    st.pyplot(fig)
+# La tabella sarà sempre visibile. Se res_df è vuoto, mostrerà solo le intestazioni.
+st.dataframe(
+    res_df.style.background_gradient(subset=['Score Finale'], cmap='YlGn') if not res_df.empty else res_df,
+    use_container_width=True, 
+    hide_index=True
+)
