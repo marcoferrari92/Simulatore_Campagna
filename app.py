@@ -13,7 +13,17 @@ if "raw_results" not in st.session_state:
     # Inizializziamo con una lista vuota invece di None per far funzionare la tabella da subito
     st.session_state.raw_results = []
 
-# --- 2. SIDEBAR: PESI E PARAMETRI (Ricalcolo Istantaneo) ---
+# --- 2. SIDEBAR: IMPOSTAZIONI AGENTE (Richiedono nuova analisi) ---
+st.sidebar.divider()
+api_key = st.sidebar.text_input("OpenAI API Key", type="password")
+with st.sidebar.expander("Modifica Comportamento AI (Richiede nuovo avvio)"):
+    ai_role = st.text_area("AI Role", value="Sei un consulente esperto.")
+    ai_task = st.text_area("AI Task", value="Valuta la compatibilità.")
+    eval_criteria = st.text_area("Criteri", value="- Coerenza core business\n- Target dimensionale")
+    max_words = st.number_input("Max parole", value=30)
+    temp = st.slider("Creatività", 0.0, 1.0, 0.0)
+
+# --- 3. SIDEBAR: PESI E PARAMETRI (Ricalcolo Istantaneo) ---
 st.sidebar.header("🎛️ Bilanciamento Dinamico")
 
 # Pesi per comporre lo Score AI (wa1-wa4)
@@ -33,15 +43,7 @@ weight_sim = 1.0 - weight_ai
 total_ai_w = w_desc + w_geo + w_dim + w_ateco
 wa1, wa2, wa3, wa4 = (w_desc/total_ai_w, w_geo/total_ai_w, w_dim/total_ai_w, w_ateco/total_ai_w) if total_ai_w > 0 else (0.25, 0.25, 0.25, 0.25)
 
-# --- 3. SIDEBAR: IMPOSTAZIONI AGENTE (Richiedono nuova analisi) ---
-st.sidebar.divider()
-api_key = st.sidebar.text_input("OpenAI API Key", type="password")
-with st.sidebar.expander("Modifica Comportamento AI (Richiede nuovo avvio)"):
-    ai_role = st.text_area("AI Role", value="Sei un consulente esperto.")
-    ai_task = st.text_area("AI Task", value="Valuta la compatibilità.")
-    eval_criteria = st.text_area("Criteri", value="- Coerenza core business\n- Target dimensionale")
-    max_words = st.number_input("Max parole", value=30)
-    temp = st.slider("Creatività", 0.0, 1.0, 0.0)
+
 
 # --- 4. UI PRINCIPALE ---
 st.title("Simulatore campagna marketing")
