@@ -147,9 +147,16 @@ st.subheader("🏆 Classifica Lead Intelligente")
 st.caption(config.WARNING_TAB)
 
 if not res_df.empty:
-    # --- 1. MOSTRA LA TABELLA (Mancava qui!) ---
+    # Applichiamo lo stile: 
+    # 1. Gradiente sullo Score Finale
+    # 2. Formattazione a 1 decimale per tutte le colonne numeriche
+    styled_df = display_df.style.background_gradient(
+        subset=['Score Finale'], 
+        cmap='YlGn'
+    ).format(precision=1) # <--- Questo limita i decimali ovunque nella tabella
+    
     st.dataframe(
-        display_df.style.background_gradient(subset=['Score Finale'], cmap='YlGn'), 
+        styled_df, 
         use_container_width=True, 
         hide_index=True
     )
