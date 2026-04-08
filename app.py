@@ -8,6 +8,20 @@ from sklearn.metrics.pairwise import cosine_similarity
 import engine.embedding_utils as emb
 import engine.llm_utils as llm # Assicurati che qui ci sia la nuova funzione valuta_llm
 
+
+# --- SIDEBAR: Bilanciamento Algoritmo ---
+st.sidebar.divider()
+st.sidebar.subheader("🎛️ Metodo di Calcolo Finale")
+st.sidebar.caption("Scegli se dare priorità all'analisi logica dell'AI o alla similarità testuale.")
+
+# Slider per il peso del giudizio AI
+weight_ai = st.sidebar.slider("Peso Giudizio Agente AI", 0.0, 1.0, 1.0, step=0.05)
+# Il peso della similarità è il complemento a 1
+weight_sim = 1.0 - weight_ai
+
+st.sidebar.info(f"Configurazione: AI ({int(weight_ai*100)}%) | Similarità ({int(weight_sim*100)}%)")
+
+
 # --- SIDEBAR: Configurazione Parametri ---
 st.sidebar.header("⚖️ Pesi Valutazione Strategica")
 
@@ -38,17 +52,7 @@ with st.sidebar.expander("Personalizza Comportamento AI", expanded=False):
     max_words = st.number_input("Max parole (Motivo)", min_value=5, max_value=100, value=25)
     temp = st.slider("Creatività (temp.)", min_value=0.0, max_value=1.0, value=0.0, step=0.1)
 
-# --- SIDEBAR: Bilanciamento Algoritmo ---
-st.sidebar.divider()
-st.sidebar.subheader("⚖️ Metodo di Calcolo Finale")
-st.sidebar.caption("Scegli se dare priorità all'analisi logica dell'AI o alla similarità testuale.")
 
-# Slider per il peso del giudizio AI
-weight_ai = st.sidebar.slider("Peso Giudizio Agente AI", 0.0, 1.0, 0.7, step=0.05)
-# Il peso della similarità è il complemento a 1
-weight_sim = 1.0 - weight_ai
-
-st.sidebar.info(f"Configurazione: AI ({int(weight_ai*100)}%) | Similarità ({int(weight_sim*100)}%)")
 
 # --- UI PRINCIPALE ---
 st.title("Analizzatore campagna marketing")
