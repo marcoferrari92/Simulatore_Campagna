@@ -22,11 +22,17 @@ with st.sidebar.expander(config.Sidebar_AI_Title):
     max_words = st.number_input(config.Sidebar_AI_Answer_Title, value=config.Max_Words)
     temp = st.slider("Creatività", 0.0, 1.0, config.Creativity)
 
-# --- 3. SIDEBAR: PESI E PARAMETRI (5 Parametri ora) ---
+
+# --- 3. SIDEBAR: PESI E PARAMETRI ---
 st.sidebar.divider()
 st.sidebar.header("🎛️ Bilanciamento Dinamico")
 
-# ... (il tuo popover e slider Mix Finale rimangono uguali) ...
+# --- AGGIUNTA: Slider Mix Finale (AI vs Affinità) ---
+with st.sidebar.popover("⚖️ Mix Finale: AI vs Affinità"):
+    st.write("Scegli quanto pesa il giudizio dell'Agente rispetto alla somiglianza testuale.")
+    weight_ai = st.slider("Peso Intelligenza Artificiale", 0.0, 1.0, 0.7)
+    weight_sim = 1.0 - weight_ai  # Vincolo automatico: la somma fa sempre 1
+    st.info(f"AI: {weight_ai:.1f} | Affinità: {weight_sim:.1f}")
 
 st.sidebar.subheader("Pesi Interni Agente")
 st.sidebar.caption("I valori verranno normalizzati automaticamente per sommare a 100%")
@@ -38,31 +44,18 @@ w_dip = st.sidebar.slider("N. Dipendenti", 0.0, 1.0, 0.15)
 w_fat = st.sidebar.slider("Fatturato", 0.0, 1.0, 0.15)
 w_ateco = st.sidebar.slider("Settore (ATECO)", 0.0, 1.0, 0.3)
 
-# CALCOLO NORMALIZZAZIONE
+# CALCOLO NORMALIZZAZIONE (wa1...wa5)
 total_sum = w_desc + w_geo + w_dip + w_fat + w_ateco
-
 if total_sum > 0:
-    # Questi sono i pesi reali che useremo nel calcolo
-    wa1, wa2, wa3, wa4, wa5 = (
-        w_desc/total_sum, 
-        w_geo/total_sum, 
-        w_dip/total_sum, 
-        w_fat/total_sum, 
-        w_ateco/total_sum
-    )
+    wa1, wa2, wa3, wa4, wa5 = w_desc/total_sum, w_geo/total_sum, w_dip/total_sum, w_fat/total_sum, w_ateco/total_sum
 else:
-    # Fallback se tutti sono a zero
     wa1 = wa2 = wa3 = wa4 = wa5 = 0.2
 
-# --- FEEDBACK VISIVO PER L'UTENTE ---
-# Creiamo una piccola tabella o una riga di testo per mostrare i pesi REALI
 with st.sidebar.expander("📊 Quote Percentuali Reali", expanded=True):
-    st.write(f"Descrizione: **{wa1:.0%}**")
-    st.write(f"Geografia: **{wa2:.0%}**")
-    st.write(f"Dipendenti: **{wa3:.0%}**")
-    st.write(f"Fatturato: **{wa4:.0%}**")
+    st.write(f"Descrizione: **{wa1:.0%}** | Geografia: **{wa2:.0%}**")
+    st.write(f"Dipendenti: **{wa3:.0%}** | Fatturato: **{wa4:.0%}**")
     st.write(f"Settore: **{wa5:.0%}**")
-    st.progress(1.0) # Barra piena per confermare che il totale è 100%
+    st.progress(1.0)
 
 # --- 4. UI PRINCIPALE ---
 st.title("Simulatore campagna marketing")
