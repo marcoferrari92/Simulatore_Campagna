@@ -112,7 +112,7 @@ if st.button("🚀 Esegui Analisi AI"):
         status.success("Analisi completata! Ora puoi regolare i pesi a sinistra.")
 
 # Messaggio di attenzione sotto il tasto
-st.warning("⚠️ **Attenzione:** L'avvio dell'analisi comporterà l'invio di dati alle API di OpenAI e il relativo consumo di crediti (Token).")
+st.warning(config.WARNING_CREDITS)
 
 # --- 6. LOGICA DI CALCOLO DINAMICO ---
 # Creiamo il DataFrame partendo dallo stato (che sarà vuoto all'inizio o pieno dopo l'analisi)
