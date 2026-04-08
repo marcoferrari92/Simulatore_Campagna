@@ -180,9 +180,10 @@ if not res_df.empty:
 
     # --- 2. MOSTRA IL GRAFICO ---
     st.divider()
-    st.subheader("📊 Comparazione scores")
-    st.caption("Il grafico mostra dove si concentra la densità dei voti per ogni parametro. Più alta è la curva, più aziende hanno ricevuto quel punteggio.")
+    st.subheader("📊 Analisi Comparativa delle Curve di Densità")
+    st.caption("Le linee colorate rappresentano i singoli parametri. La linea **nera tratteggiata** rappresenta la distribuzione dello **Score Finale**.")
 
+    # 1. Mapping per i parametri singoli
     column_mapping = {
         "v_desc": "Descrizione",
         "v_geo": "Geografia",
@@ -191,12 +192,14 @@ if not res_df.empty:
         "v_ateco": "Settore"
     }
     
-    df_plot = res_df[list(column_mapping.keys())].rename(columns=column_mapping)
-    df_melted = df_plot.melt(var_name='Parametro', value_name='Voto')
+    # Prepariamo i dati per i parametri (Long-form per Seaborn)
+    df_params = res_df[list(column_mapping.keys())].rename(columns=column_mapping)
+    df_melted = df_params.melt(var_name='Parametro', value_name='Voto')
     df_melted["Voto"] = pd.to_numeric(df_melted["Voto"], errors='coerce').fillna(0)
 
     fig, ax = plt.subplots(figsize=(12, 6))
 
+    # 2. Disegniamo le curve dei singoli parametri
     sns.kdeplot(
         data=df_melted, 
         x="Voto", 
@@ -204,15 +207,30 @@ if not res_df.empty:
         fill=True,         
         common_norm=False,  
         palette="bright", 
-        alpha=0.2,         
-        linewidth=2.5,     
+        alpha=0.1,         
+        linewidth=1.5,     
         ax=ax
     )
 
+    # 3. Aggiungiamo la curva dello SCORE FINALE (Tratteggiata e più marcata)
+    sns.kdeplot(
+        data=res_df, 
+        x="Score Finale", 
+        color="black", 
+        label="SCORE FINALE",
+        linewidth=4,       # Più spessa per visibilità
+        linestyle="--",    # Tratteggiata
+        ax=ax
+    )
+
+    # Personalizzazione estetica
     ax.set_xlim(0, 100)
-    ax.set_title("Distribuzione dei Giudizi AI", fontsize=16)
-    ax.set_xlabel("Voto", fontsize=12)
-    ax.set_ylabel("Densità (Frequenza)", fontsize=12)
+    ax.set_title("Profilo di Distribuzione: Parametri vs Risultato Finale", fontsize=16)
+    ax.set_xlabel("Voto / Score (0-100)", fontsize=12)
+    ax.set_ylabel("Densità", fontsize=12)
+    
+    # Aggiorniamo la legenda per includere lo Score Finale
+    ax.legend(title="Legenda", loc='upper left')
     ax.grid(axis='both', linestyle='--', alpha=0.3)
 
     st.pyplot(fig)
