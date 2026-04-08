@@ -115,12 +115,15 @@ st.warning(config.WARNING_CREDITS)
 # --- 6. LOGICA DI CALCOLO DINAMICO ---
 res_df = pd.DataFrame(st.session_state.raw_results)
 
-# Definiamo le colonne che vogliamo mostrare nella tabella
-# Lo facciamo qui fuori così sono accessibili a entrambi i rami (if/else)
 cols_da_mostrare = ["Azienda", "Score Finale", "Score AI", "Affinità %", "Settore", "Motivo"]
 
 if not res_df.empty:
-    # Ricalcolo Score AI basato sui 5 pesi
+    # 1. Assicuriamoci che i voti siano numerici prima di calcolare
+    voti_cols = ["v_desc", "v_geo", "v_dip", "v_fat", "v_ateco"]
+    for col in voti_cols:
+        res_df[col] = pd.to_numeric(res_df[col], errors='coerce').fillna(0)
+
+    # 2. Calcolo Score AI
     res_df["Score AI"] = (
         (res_df["v_desc"] * wa1) + 
         (res_df["v_geo"] * wa2) + 
@@ -129,30 +132,27 @@ if not res_df.empty:
         (res_df["v_ateco"] * wa5)
     ).round(1)
     
-    # Calcolo finale
-    res_df["Affinità %"] = (res_df["Sim_Raw"] * 100).round(1)
+    res_df["Affinità %"] = (pd.to_numeric(res_df["Sim_Raw"], errors='coerce').fillna(0) * 100).round(1)
     res_df["Score Finale"] = (res_df["Score AI"] * weight_ai) + (res_df["Affinità %"] * weight_sim)
     res_df["Score Finale"] = res_df["Score Finale"].round(1)
     
-    # Ordiniamo e filtriamo le colonne per la visualizzazione
     res_df = res_df.sort_values(by="Score Finale", ascending=False)
-    display_df = res_df[cols_da_mostrare] # <--- Creata qui se ci sono dati
+    display_df = res_df[cols_da_mostrare]
 else:
-    # Se vuoto, creiamo un DataFrame vuoto con le stesse colonne
-    display_df = pd.DataFrame(columns=cols_da_mostrare) # <--- Creata qui se NON ci sono dati
+    display_df = pd.DataFrame(columns=cols_da_mostrare)
 
 # --- 7. VISUALIZZAZIONE RISULTATI ---
 st.divider()
 st.subheader("🏆 Classifica Lead Intelligente")
-st.caption(config.WARNING_TAB)
 
 if not res_df.empty:
+    st.dataframe(display_df.style.background_gradient(subset=['Score Finale'], cmap='YlGn'), use_container_width=True, hide_index=True)
+    
+    # --- GRAFICO UNICO DI DISTRIBUZIONE (OVERLAY) ---
     st.divider()
     st.subheader("📊 Analisi Comparativa delle Distribuzioni")
-    st.caption("Confronto diretto della densità dei voti per ogni parametro. Le curve mostrano dove si concentra maggiormente il giudizio dell'AI.")
-
-    # Prepariamo i dati per Seaborn (formato "long-form" per gestire i colori)
-    # Prendiamo solo le colonne dei voti
+    
+    # Mapping per nomi leggibili nel grafico
     column_mapping = {
         "v_desc": "Descrizione",
         "v_geo": "Geografia",
@@ -161,34 +161,40 @@ if not res_df.empty:
         "v_ateco": "Settore"
     }
     
-    # Creiamo un dataframe temporaneo per il grafico
-    df_melted = res_df.rename(columns=column_mapping).melt(
+    # Prepariamo i dati per il grafico assicurandoci che siano puliti
+    df_temp = res_df[list(column_mapping.keys()) + ["Azienda"]].copy()
+    df_temp = df_temp.rename(columns=column_mapping)
+    
+    df_melted = df_temp.melt(
         id_vars=['Azienda'], 
-        value_vars=list(column_mapping.values()),
         var_name='Parametro', 
         value_name='Voto'
     )
-
-    # Creazione del grafico unico
+    
+    # FORZATURA NUMERICA: fondamentale per evitare il tuo errore
+    df_melted["Voto"] = pd.to_numeric(df_melted["Voto"], errors='coerce')
+    
     fig, ax = plt.subplots(figsize=(12, 6))
-
-    # Usiamo histplot con l'argomento 'hue' per differenziare i parametri
+    
+    # Disegniamo l'istogramma unico
     sns.histplot(
         data=df_melted, 
         x="Voto", 
         hue="Parametro", 
-        element="step",  # 'step' o 'poly' rende il grafico più leggibile quando sovrapposto
-        kde=True,        # Aggiunge le curve di densità
+        element="step", 
+        kde=True, 
         palette="bright", 
-        alpha=0.1,       # Trasparenza delle barre per vedere la sovrapposizione
+        alpha=0.1, 
         ax=ax
     )
-
-    # Personalizzazione
+    
     ax.set_xlim(0, 100)
-    ax.set_title("Distribuzione dei voti per parametro", fontsize=16)
-    ax.set_xlabel("Voto assegnato (0-100)", fontsize=12)
-    ax.set_ylabel("Numero di Aziende (Frequenza)", fontsize=12)
-    ax.grid(axis='y', linestyle='--', alpha=0.4)
-
+    ax.set_title("Overlay delle distribuzioni per parametro", fontsize=15)
+    ax.set_xlabel("Voto (0-100)")
+    ax.set_ylabel("Frequenza (N. Aziende)")
+    
     st.pyplot(fig)
+
+else:
+    st.dataframe(display_df, use_container_width=True, hide_index=True)
+    st.info("In attesa di dati... Carica un file e clicca su 'Avvia Analisi'.")
