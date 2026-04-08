@@ -20,8 +20,8 @@ with st.sidebar.expander("Modifica Comportamento AI (Richiede nuovo avvio)"):
     ai_role = st.text_area("AI Role", value=config.AI_ROLE_DEFAULT)
     ai_task = st.text_area("AI Task", value=config.AI_TASK_DEFAULT)
     eval_criteria = st.text_area("Criteri", value=config.EVAL_CRITERIA_DEFAULT)
-    max_words = st.number_input("Max parole", value=30)
-    temp = st.slider("Creatività", 0.0, 1.0, 0.0)
+    max_words = st.number_input("Max parole", value=config.Max_Words)
+    temp = st.slider("Creatività", 0.0, 1.0, config.Creativity)
 
 # --- 3. SIDEBAR: PESI E PARAMETRI (Ricalcolo Istantaneo) ---
 st.sidebar.divider()
