@@ -50,7 +50,13 @@ col1, col2 = st.columns(2)
 with col1:
     uploaded_file = st.file_uploader("Carica Database JSON", type=["json"])
 with col2:
-    campaign_text = st.text_area("Testo Campagna:", height=150)
+    # Definiamo il testo di default
+default_campaign = """Newsletter che spiega nuovi DPI indispensabili per lo stoccaggio di materiali pericolosi o tossici, quali prodotti da reazioni chimiche, per un corso di formazione organizzato a Vicenza."""
+    campaign_text = st.text_area(
+        "Testo Campagna:", 
+        value=default_campaign,
+        height=250
+    )
 
 # --- 5. ESECUZIONE ANALISI (Solo se cliccato il tasto) ---
 if st.button("🚀 Esegui Analisi AI (Consuma Crediti)"):
