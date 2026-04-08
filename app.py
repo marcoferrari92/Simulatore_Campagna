@@ -258,40 +258,47 @@ if not res_df.empty:
 
     st.pyplot(fig)
 
-    # --- ISTOGRAMMI QUANTITATIVI (Griglia) ---
+    # --- 3. ISTOGRAMMI QUANTITATIVI (Griglia) ---
     st.divider()
     st.subheader("🔢 Conteggio Lead per Fascia di Voto")
-    st.caption("Questi grafici mostrano il numero esatto di aziende (Asse Y) per ogni range di punteggio (Asse X).")
+    st.caption("Visualizzazione del numero esatto di aziende per ogni parametro. L'ultimo grafico mostra la distribuzione del risultato finale.")
 
-    # Definiamo i parametri e i colori corrispondenti per coerenza con il KDE
+    # Parametri da mappare (5 componenti + Score Finale)
     plot_params = {
-        "v_desc": ("Descrizione", "#3498db"),
-        "v_geo": ("Geografia", "#e67e22"),
-        "v_dip": ("Dipendenti", "#2ecc71"),
-        "v_fat": ("Fatturato", "#e74c3c"),
-        "v_ateco": ("Settore", "#9b59b6"),
-        "Score Finale": ("TOTAL SCORE", "#34495e") # Grigio scuro/Nero per il totale
+        "v_desc": ("Voto Descrizione", "#3498db"),
+        "v_geo": ("Voto Geografia", "#e67e22"),
+        "v_dip": ("Voto Dipendenti", "#2ecc71"),
+        "v_fat": ("Voto Fatturato", "#e74c3c"),
+        "v_ateco": ("Voto Settore", "#9b59b6"),
+        "Score Finale": ("SCORE FINALE", "#2c3e50") # Colore scuro per distinguerlo
     }
 
-    # Creiamo una griglia 2x3 (2 righe, 3 colonne)
+    # Creiamo la griglia 2x3
     fig_hists, axes = plt.subplots(2, 3, figsize=(16, 10))
-    axes = axes.flatten() # Trasformiamo la matrice in una lista piatta per iterare facilmente
+    axes = axes.flatten()
 
     for i, (col, (label, color)) in enumerate(plot_params.items()):
+        # Disegniamo l'istogramma
         sns.histplot(
             data=res_df, 
             x=col, 
-            bins=10,           # Divide i voti in 10 blocchi (0-10, 10-20, ecc.)
+            bins=10, 
             color=color, 
             edgecolor="white",
-            ax=axes[i],
-            stat="count"       # <--- Asse Y = Numero di aziende
+            alpha=0.8,
+            ax=axes[i]
         )
-        axes[i].set_title(f"Distribuzione: {label}", fontsize=14, fontweight='bold')
+        
+        # Aggiungiamo una linea verticale per la media del parametro
+        mean_val = res_df[col].mean()
+        axes[i].axvline(mean_val, color='red', linestyle='--', alpha=0.6, label=f'Media: {mean_val:.1f}')
+        
+        # Personalizzazione
+        axes[i].set_title(label, fontsize=14, fontweight='bold')
         axes[i].set_xlim(0, 100)
-        axes[i].set_xlabel("Voto (0-100)")
-        axes[i].set_ylabel("Numero di Aziende")
-        axes[i].grid(axis='y', linestyle='--', alpha=0.3)
+        axes[i].set_xlabel("Punteggio")
+        axes[i].set_ylabel("N. Aziende")
+        axes[i].legend(fontsize='small')
 
     plt.tight_layout()
     st.pyplot(fig_hists)
