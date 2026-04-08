@@ -115,15 +115,37 @@ st.warning(config.WARNING_CREDITS)
 # --- 6. LOGICA DI CALCOLO DINAMICO ---
 res_df = pd.DataFrame(st.session_state.raw_results)
 
-cols_da_mostrare = ["Azienda", "Score Finale", "Score AI", "Affinità", "Settore", "Motivo"]
+# Aggiorniamo la lista delle colonne includendo i voti singoli
+cols_da_mostrare = [
+    "Azienda", 
+    "Score Finale", 
+    "Score AI", 
+    "Affinità %",
+    "v_desc", 
+    "v_geo", 
+    "v_dip", 
+    "v_fat", 
+    "v_ateco", 
+    "Settore", 
+    "Motivo"
+]
+
+# Creiamo una mappatura per rinominare le colonne tecniche in nomi leggibili nella tabella
+column_names_it = {
+    "v_desc": "Voto Desc.",
+    "v_geo": "Voto Geo.",
+    "v_dip": "Voto Dip.",
+    "v_fat": "Voto Fatt.",
+    "v_ateco": "Voto ATECO"
+}
 
 if not res_df.empty:
-    # 1. Assicuriamoci che i voti siano numerici prima di calcolare
+    # 1. Assicuriamoci che i voti siano numerici
     voti_cols = ["v_desc", "v_geo", "v_dip", "v_fat", "v_ateco"]
     for col in voti_cols:
         res_df[col] = pd.to_numeric(res_df[col], errors='coerce').fillna(0)
 
-    # 2. Calcolo Score AI
+    # 2. Calcolo Score AI (basato sui 5 pesi definiti in sidebar)
     res_df["Score AI"] = (
         (res_df["v_desc"] * wa1) + 
         (res_df["v_geo"] * wa2) + 
@@ -132,34 +154,29 @@ if not res_df.empty:
         (res_df["v_ateco"] * wa5)
     ).round(1)
     
-    res_df["Affinità"] = (pd.to_numeric(res_df["Sim_Raw"], errors='coerce').fillna(0) * 100).round(1)
-    res_df["Score Finale"] = (res_df["Score AI"] * weight_ai) + (res_df["Affinità"] * weight_sim)
+    res_df["Affinità %"] = (pd.to_numeric(res_df["Sim_Raw"], errors='coerce').fillna(0) * 100).round(1)
+    res_df["Score Finale"] = (res_df["Score AI"] * weight_ai) + (res_df["Affinità %"] * weight_sim)
     res_df["Score Finale"] = res_df["Score Finale"].round(1)
     
     res_df = res_df.sort_values(by="Score Finale", ascending=False)
-    display_df = res_df[cols_da_mostrare]
+    # Filtriamo e rinominiamo le colonne per la tabella
+    display_df = res_df[cols_da_mostrare].rename(columns=column_names_it)
 else:
-    display_df = pd.DataFrame(columns=cols_da_mostrare)
+    # Se vuoto, creiamo le intestazioni rinominate
+    display_df = pd.DataFrame(columns=[column_names_it.get(c, c) for c in cols_da_mostrare])
 
 # --- 7. VISUALIZZAZIONE RISULTATI ---
 st.divider()
 st.subheader("🏆 Classifica Lead Intelligente")
-st.caption(config.WARNING_TAB)
 
 if not res_df.empty:
-    # Applichiamo lo stile: 
-    # 1. Gradiente sullo Score Finale
-    # 2. Formattazione a 1 decimale per tutte le colonne numeriche
+    # Applichiamo lo stile con precisione a 1 decimale e gradiente sullo Score Finale
     styled_df = display_df.style.background_gradient(
         subset=['Score Finale'], 
         cmap='YlGn'
-    ).format(precision=1) # <--- Questo limita i decimali ovunque nella tabella
+    ).format(precision=1)
     
-    st.dataframe(
-        styled_df, 
-        use_container_width=True, 
-        hide_index=True
-    )
+    st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
     # --- 2. MOSTRA IL GRAFICO ---
     st.divider()
