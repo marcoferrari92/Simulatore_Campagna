@@ -115,6 +115,9 @@ if st.button("🚀 Esegui Analisi AI (Consuma Crediti)"):
         st.session_state.raw_results = results_storage
         status.success("Analisi completata! Ora puoi regolare i pesi a sinistra.")
 
+# Messaggio di attenzione sotto il tasto
+st.warning("⚠️ **Attenzione:** L'avvio dell'analisi comporterà l'invio di dati alle API di OpenAI e il relativo consumo di crediti (Token).")
+
 # --- 6. LOGICA DI CALCOLO DINAMICO ---
 # Creiamo il DataFrame partendo dallo stato (che sarà vuoto all'inizio o pieno dopo l'analisi)
 res_df = pd.DataFrame(st.session_state.raw_results)
