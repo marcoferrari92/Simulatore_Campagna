@@ -181,7 +181,6 @@ if not res_df.empty:
     # --- 2. MOSTRA IL GRAFICO ---
     st.divider()
     st.subheader("📊 Analisi Comparativa delle Curve di Densità")
-    st.caption("Le linee colorate rappresentano i parametri singoli. La linea **nera tratteggiata** rappresenta la distribuzione dello **Score Finale**.")
 
     column_mapping = {
         "v_desc": "Descrizione",
@@ -191,13 +190,14 @@ if not res_df.empty:
         "v_ateco": "Settore"
     }
     
+    # Prepariamo i dati
     df_params = res_df[list(column_mapping.keys())].rename(columns=column_mapping)
     df_melted = df_params.melt(var_name='Parametro', value_name='Voto')
     df_melted["Voto"] = pd.to_numeric(df_melted["Voto"], errors='coerce').fillna(0)
 
     fig, ax = plt.subplots(figsize=(12, 6))
 
-    # 1. Disegniamo le curve dei singoli parametri
+    # 1. Disegniamo le curve dei parametri (usiamo 'legend=True')
     sns.kdeplot(
         data=df_melted, 
         x="Voto", 
@@ -207,32 +207,34 @@ if not res_df.empty:
         palette="bright", 
         alpha=0.1,         
         linewidth=1.5,     
-        ax=ax
+        ax=ax,
+        legend=True # Forza Seaborn a creare gli ingressi
     )
 
     # 2. Aggiungiamo la curva dello SCORE FINALE
+    # Usiamo una label esplicita che verrà aggiunta a quelle esistenti
     sns.kdeplot(
         data=res_df, 
         x="Score Finale", 
         color="black", 
-        label="SCORE FINALE", # Etichetta per la legenda
         linewidth=3,       
         linestyle="--",    
+        label="SCORE FINALE",
         ax=ax
     )
 
-    # --- FIX PER LA LEGENDA ---
-    # Recuperiamo gli "handles" (le linee) e le "labels" (i nomi) generati da Seaborn + Matplotlib
+    # --- FIX DEFINITIVO PER LA LEGENDA COMBINATA ---
+    # Questo comando raccoglie tutto ciò che ha una 'label' assegnata
     handles, labels = ax.get_legend_handles_labels()
     
-    # Visualizziamo la legenda combinata
-    ax.legend(handles=handles, labels=labels, title="Parametri e Risultato", loc='upper left')
+    # Rimuoviamo eventuali duplicati e ricreiamo la legenda
+    by_label = dict(zip(labels, handles))
+    ax.legend(by_label.values(), by_label.keys(), title="Legenda Parametri", loc='upper left')
 
-    # Personalizzazione estetica
     ax.set_xlim(0, 100)
     ax.set_title("Profilo di Distribuzione: Parametri vs Risultato Finale", fontsize=16)
-    ax.set_xlabel("Voto / Score (0-100)", fontsize=12)
-    ax.set_ylabel("Densità", fontsize=12)
+    ax.set_xlabel("Voto / Score (0-100)")
+    ax.set_ylabel("Densità")
     ax.grid(axis='both', linestyle='--', alpha=0.3)
 
     st.pyplot(fig)
