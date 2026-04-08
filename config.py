@@ -5,6 +5,13 @@ Giudizio_AI = 1.0
 Max_Words = 30
 Creativity = 0.0
 
+# Titoli
+Sidebar_AI_Title = "Modifica Comportamento AI (Richiede nuovo avvio)"
+Sidebar_AI_Role_Title = "AI Role"
+Sidebar_AI_Task_Title = "AI Task"
+Sidebar_AI_Criteria_Title = "AI Criteria"
+Sidebar_AI_Answer_Title = "Answer max words"
+
 # Testi di default
 TXT_DEFAULT_CAMPAIGN = """Newsletter che spiega nuovi DPI indispensabili per lo stoccaggio di materiali pericolosi o tossici, quali prodotti da reazioni chimiche, per un corso di formazione organizzato a Vicenza."""
 
@@ -29,7 +36,7 @@ WARNING_TAB = "Muovi gli slider dei pesi per ricalcolare la classifica istantane
 WARNING_CREDITS = "⚠️ **Attenzione:** L'avvio dell'analisi comporterà l'invio di dati alle API di OpenAI e il relativo consumo di crediti (Token)."
 
 # Configurazione Agente Default
-AI_ROLE_DEFAULT = "Sei un consulente aziendale esperto."
+AI_ROLE_DEFAULT = "Sei un consulente aziendale esperto dell'azienda target."
 AI_TASK_DEFAULT = "Valuta la compatibilità tra la campagna e il profilo aziendale."
 EVAL_CRITERIA_DEFAULT = "- Coerenza settoriale\n- Rilevanza geografica\n- Capacità finanziaria/dimensionale"
 
