@@ -5,6 +5,13 @@ Giudizio_AI = 1.0
 Max_Words = 30
 Creativity = 0.0
 
+# Configurazione Agente Default
+AI_ROLE_DEFAULT = "Sei un consulente aziendale esperto dell'azienda target."
+AI_TASK_DEFAULT = "Valuta la compatibilità tra la campagna e il profilo aziendale."
+EVAL_CRITERIA_DEFAULT = "- Coerenza settoriale\n- Rilevanza geografica\n- Capacità finanziaria/dimensionale"
+
+
+
 # Titoli
 Sidebar_AI_Title = "Modifica Comportamento AI (Richiede nuovo avvio)"
 Sidebar_AI_Role_Title = "AI Role"
@@ -36,9 +43,4 @@ HELP_Generale = """
 
 WARNING_TAB = "Muovi gli slider dei pesi per ricalcolare la classifica istantaneamente senza analizzare nuovamente il database"
 WARNING_CREDITS = "⚠️ **Attenzione:** L'avvio dell'analisi comporterà l'invio di dati alle API di OpenAI e il relativo consumo di crediti (Token)."
-
-# Configurazione Agente Default
-AI_ROLE_DEFAULT = "Sei un consulente aziendale esperto dell'azienda target."
-AI_TASK_DEFAULT = "Valuta la compatibilità tra la campagna e il profilo aziendale."
-EVAL_CRITERIA_DEFAULT = "- Coerenza settoriale\n- Rilevanza geografica\n- Capacità finanziaria/dimensionale"
 
