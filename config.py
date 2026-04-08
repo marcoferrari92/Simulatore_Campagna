@@ -2,7 +2,8 @@
 
 # Parametri di default
 Giudizio_AI = 1.0
-Max_Words    = 30
+Max_Words = 30
+Creativity = 0
 
 # Testi di default
 TXT_DEFAULT_CAMPAIGN = """Newsletter che spiega nuovi DPI indispensabili per lo stoccaggio di materiali pericolosi o tossici, quali prodotti da reazioni chimiche, per un corso di formazione organizzato a Vicenza."""
