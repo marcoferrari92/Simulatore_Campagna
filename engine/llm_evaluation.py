@@ -5,20 +5,35 @@ def valuta_llm(
     company_description, 
     AI_role, 
     AI_task, 
-    evaluation_criteria, 
+    evaluation_criteria,
+    region,
+    province,
+    city,
+    employees_count,
+    revenue,
+    ateco_macro_sector,
+    ateco_code,
     max_words=15, 
     temperature=0
 ):
     """
-    Funzione di valutazione con variabili in inglese e prompt in italiano.
+    Funzione di valutazione potenziata con dati demografici, finanziari e settoriali (ATECO).
     """
     
     prompt = f"""
     {AI_task}
 
-    CAMPAGNA (Argomento): {campaign}
-    AZIENDA (Nome): {company_name}
-    ATTIVITÀ AZIENDALE: {company_description}
+    --- DATI AZIENDA ---
+    NOME: {company_name}
+    DESCRIZIONE: {company_description}
+    SETTORE (Macro Ateco): {ateco_macro_sector}
+    CODICE ATECO: {ateco_code}
+    LOCALIZZAZIONE: {city} ({province}), {region}
+    DIMENSIONE: {employees_count} dipendenti
+    FATTURATO: {revenue}
+
+    --- DETTAGLI CAMPAGNA ---
+    ARGOMENTO/CAMPAGNA: {campaign}
 
     CRITERI DI VALUTAZIONE:
     {evaluation_criteria}
@@ -41,20 +56,18 @@ def valuta_llm(
     score = 0
     reason = ""
 
-    # Parsing dei risultati
+    # Parsing dei risultati migliorato
     for line in text.split("\n"):
-        line_upper = line.upper()
-        if "COMPATIBILITA" in line_upper:
-            try:
-                # Estrae il voto numerico
-                score = int(''.join(filter(str.isdigit, line.split(":")[1])))
-            except (IndexError, ValueError): 
-                pass
-        elif "MOTIVO" in line_upper:
-            try:
-                # Estrae la spiegazione
-                reason = line.split(":", 1)[1].strip()
-            except IndexError:
-                pass
+        if ":" in line:
+            key, value = line.split(":", 1)
+            key_upper = key.strip().upper()
+            
+            if "COMPATIBILITA" in key_upper:
+                try:
+                    score = int(''.join(filter(str.isdigit, value)))
+                except ValueError: 
+                    score = 0
+            elif "MOTIVO" in key_upper:
+                reason = value.strip()
 
     return score, reason
