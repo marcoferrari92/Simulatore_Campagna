@@ -1,7 +1,7 @@
 # config.py
 
 # Testi di default
-DEFAULT_CAMPAIGN = """Newsletter che spiega nuovi DPI indispensabili per lo stoccaggio di materiali pericolosi o tossici, quali prodotti da reazioni chimiche, per un corso di formazione organizzato a Vicenza."""
+TXT_DEFAULT_CAMPAIGN = """Newsletter che spiega nuovi DPI indispensabili per lo stoccaggio di materiali pericolosi o tossici, quali prodotti da reazioni chimiche, per un corso di formazione organizzato a Vicenza."""
 
 # Testi informativi UI
 HELP_CALCOLO_PESI = """
