@@ -28,55 +28,47 @@ with st.sidebar.expander(config.Sidebar_AI_Title):
 st.sidebar.divider()
 st.sidebar.header("🎛️ Bilanciamento Dinamico")
 
-# --- AGGIUNTA: Slider Mix Finale (AI vs Affinità) ---
+# --- MIX FINALE (AI vs Semantica) ---
 with st.sidebar.popover("⚖️ Mix Finale: AI vs Affinità"):
-    st.write("Scegli quanto pesa il giudizio dell'Agente rispetto alla somiglianza testuale.")
+    st.write("Bilancia il peso dell'Agente rispetto alla somiglianza testuale.")
     weight_ai = st.slider("Peso Intelligenza Artificiale", 0.0, 1.0, 0.7)
-    weight_sim = 1.0 - weight_ai  # Vincolo automatico: la somma fa sempre 1
+    weight_sim = 1.0 - weight_ai
     st.info(f"AI: {weight_ai:.1f} | Affinità: {weight_sim:.1f}")
 
 st.sidebar.subheader("Pesi Interni Agente")
-st.sidebar.caption("I valori verranno normalizzati automaticamente per sommare a 100%")
+st.sidebar.caption("Sposta gli slider per definire le priorità dell'analisi.")
 
-# Slider indipendenti
+# Slider per i 5 parametri
 w_desc = st.sidebar.slider("Descrizione", 0.0, 1.0, 0.3)
 w_geo = st.sidebar.slider("Geografia", 0.0, 1.0, 0.1)
 w_dip = st.sidebar.slider("N. Dipendenti", 0.0, 1.0, 0.15)
 w_fat = st.sidebar.slider("Fatturato", 0.0, 1.0, 0.15)
 w_ateco = st.sidebar.slider("Settore (ATECO)", 0.0, 1.0, 0.3)
 
-# CALCOLO NORMALIZZAZIONE (wa1...wa5)
+# Calcolo normalizzazione
 total_sum = w_desc + w_geo + w_dip + w_fat + w_ateco
 if total_sum > 0:
     wa1, wa2, wa3, wa4, wa5 = w_desc/total_sum, w_geo/total_sum, w_dip/total_sum, w_fat/total_sum, w_ateco/total_sum
 else:
     wa1 = wa2 = wa3 = wa4 = wa5 = 0.2
 
-st.sidebar.subheader("📊 Bilanciamento Pesi")
-# Prepariamo i dati per il radar
-radar_data = pd.DataFrame(dict(
+# --- FEEDBACK VISUALE: IL GRAFICO RADAR ---
+st.sidebar.divider()
+radar_df = pd.DataFrame(dict(
     r=[wa1, wa2, wa3, wa4, wa5],
     theta=['Desc.', 'Geo.', 'Dip.', 'Fatt.', 'Settore']
 ))
 
-fig_radar = px.line_polar(radar_data, r='r', theta='theta', line_close=True)
-fig_radar.update_traces(fill='toself', line_color='#2ecc71')
+fig_radar = px.line_polar(radar_df, r='r', theta='theta', line_close=True)
+fig_radar.update_traces(fill='toself', line_color='#2ecc71', marker=dict(size=8))
 fig_radar.update_layout(
-    polar=dict(
-        radialaxis=dict(visible=True, range=[0, 1], showticklabels=False),
-    ),
+    polar=dict(radialaxis=dict(visible=True, range=[0, max(0.5, max(radar_df['r']))])),
     showlegend=False,
-    margin=dict(l=20, r=20, t=20, b=20),
-    height=200
+    height=250,
+    margin=dict(l=40, r=40, t=20, b=20)
 )
 
 st.sidebar.plotly_chart(fig_radar, use_container_width=True, config={'displayModeBar': False})
-
-with st.sidebar.expander("📊 Quote Percentuali Reali", expanded=True):
-    st.write(f"Descrizione: **{wa1:.0%}** | Geografia: **{wa2:.0%}**")
-    st.write(f"Dipendenti: **{wa3:.0%}** | Fatturato: **{wa4:.0%}**")
-    st.write(f"Settore: **{wa5:.0%}**")
-    st.progress(1.0)
 
 # --- 4. UI PRINCIPALE ---
 st.title("Simulatore campagna marketing")
