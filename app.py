@@ -14,7 +14,6 @@ if "raw_results" not in st.session_state:
     st.session_state.raw_results = []
 
 # --- 2. SIDEBAR: IMPOSTAZIONI AGENTE (Richiedono nuova analisi) ---
-st.sidebar.divider()
 api_key = st.sidebar.text_input("OpenAI API Key", type="password")
 with st.sidebar.expander("Modifica Comportamento AI (Richiede nuovo avvio)"):
     ai_role = st.text_area("AI Role", value="Sei un consulente esperto.")
@@ -24,6 +23,7 @@ with st.sidebar.expander("Modifica Comportamento AI (Richiede nuovo avvio)"):
     temp = st.slider("Creatività", 0.0, 1.0, 0.0)
 
 # --- 3. SIDEBAR: PESI E PARAMETRI (Ricalcolo Istantaneo) ---
+st.sidebar.divider()
 st.sidebar.header("🎛️ Bilanciamento Dinamico")
 
 # Pesi per il mix finale (AI vs Similarità)
