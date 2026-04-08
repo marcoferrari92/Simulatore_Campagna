@@ -49,7 +49,7 @@ wa1, wa2, wa3, wa4 = (w_desc/total_ai_w, w_geo/total_ai_w, w_dim/total_ai_w, w_a
 
 # --- 4. UI PRINCIPALE ---
 st.title("Simulatore campagna marketing")
-with st.sidebar.popover("💡Istruzioni"):
+with st.popover("💡Istruzioni"):
      st.markdown(config.HELP_GENERALE)
 
 col1, col2 = st.columns(2)
