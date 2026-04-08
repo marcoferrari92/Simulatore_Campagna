@@ -257,6 +257,44 @@ if not res_df.empty:
     ax.grid(axis='both', linestyle='--', alpha=0.3)
 
     st.pyplot(fig)
+
+    # --- ISTOGRAMMI QUANTITATIVI (Griglia) ---
+    st.divider()
+    st.subheader("🔢 Conteggio Lead per Fascia di Voto")
+    st.caption("Questi grafici mostrano il numero esatto di aziende (Asse Y) per ogni range di punteggio (Asse X).")
+
+    # Definiamo i parametri e i colori corrispondenti per coerenza con il KDE
+    plot_params = {
+        "v_desc": ("Descrizione", "#3498db"),
+        "v_geo": ("Geografia", "#e67e22"),
+        "v_dip": ("Dipendenti", "#2ecc71"),
+        "v_fat": ("Fatturato", "#e74c3c"),
+        "v_ateco": ("Settore", "#9b59b6"),
+        "Score Finale": ("TOTAL SCORE", "#34495e") # Grigio scuro/Nero per il totale
+    }
+
+    # Creiamo una griglia 2x3 (2 righe, 3 colonne)
+    fig_hists, axes = plt.subplots(2, 3, figsize=(16, 10))
+    axes = axes.flatten() # Trasformiamo la matrice in una lista piatta per iterare facilmente
+
+    for i, (col, (label, color)) in enumerate(plot_params.items()):
+        sns.histplot(
+            data=res_df, 
+            x=col, 
+            bins=10,           # Divide i voti in 10 blocchi (0-10, 10-20, ecc.)
+            color=color, 
+            edgecolor="white",
+            ax=axes[i],
+            stat="count"       # <--- Asse Y = Numero di aziende
+        )
+        axes[i].set_title(f"Distribuzione: {label}", fontsize=14, fontweight='bold')
+        axes[i].set_xlim(0, 100)
+        axes[i].set_xlabel("Voto (0-100)")
+        axes[i].set_ylabel("Numero di Aziende")
+        axes[i].grid(axis='y', linestyle='--', alpha=0.3)
+
+    plt.tight_layout()
+    st.pyplot(fig_hists)
     
 else:
     # Questa parte viene eseguita solo all'avvio (tabella vuota)
