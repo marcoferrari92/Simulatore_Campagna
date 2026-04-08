@@ -200,7 +200,6 @@ if not res_df.empty:
     fig, ax = plt.subplots(figsize=(12, 6))
 
     # 3. Disegniamo tutto in un colpo solo
-    # Seaborn creerà la legenda perfetta per noi
     sns.kdeplot(
         data=df_melted, 
         x="Voto", 
@@ -212,14 +211,21 @@ if not res_df.empty:
         linewidth=2,     
         ax=ax
     )
-    
-    # Approccio brutale ma efficace: l'ultima linea aggiunta
+
+    # --- AGGIUNGI DA QUI ---
+    # Recuperiamo tutte le linee create nel grafico
+    lines = ax.get_lines()
+
     if len(lines) > 0:
-        final_line = lines[0] # Spesso Seaborn inverte l'ordine nelle KDE
+        # Seaborn solitamente mette l'ultima categoria (TOTAL SCORE) in posizione 0 
+        # a causa dell'ordine di sovrapposizione (z-order) predefinito.
+        final_line = lines[0] 
+        
         final_line.set_linestyle("--")
-        final_line.set_linewidth(8) # Qui lo vedi per forza
+        final_line.set_linewidth(8)  # Ora sarà molto evidente
         final_line.set_color("black")
-        final_line.set_zorder(10)
+        final_line.set_zorder(10)    # La porta sopra tutte le altre aree colorate
+    # --- A QUI ---
 
     # Estetica finale
     ax.set_xlim(0, 100)
