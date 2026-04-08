@@ -179,7 +179,7 @@ if not res_df.empty:
     st.dataframe(styled_df, use_container_width=True, hide_index=True)
 
     # --- 2. MOSTRA IL GRAFICO ---
-    if not res_df.empty:
+    
     st.divider()
     st.subheader("📊 Analisi Comparativa delle Curve di Densità")
 
