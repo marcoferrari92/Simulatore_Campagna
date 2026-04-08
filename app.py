@@ -181,9 +181,8 @@ if not res_df.empty:
     # --- 2. MOSTRA IL GRAFICO ---
     st.divider()
     st.subheader("📊 Analisi Comparativa delle Curve di Densità")
-    st.caption("Le linee colorate rappresentano i singoli parametri. La linea **nera tratteggiata** rappresenta la distribuzione dello **Score Finale**.")
+    st.caption("Le linee colorate rappresentano i parametri singoli. La linea **nera tratteggiata** rappresenta la distribuzione dello **Score Finale**.")
 
-    # 1. Mapping per i parametri singoli
     column_mapping = {
         "v_desc": "Descrizione",
         "v_geo": "Geografia",
@@ -192,14 +191,13 @@ if not res_df.empty:
         "v_ateco": "Settore"
     }
     
-    # Prepariamo i dati per i parametri (Long-form per Seaborn)
     df_params = res_df[list(column_mapping.keys())].rename(columns=column_mapping)
     df_melted = df_params.melt(var_name='Parametro', value_name='Voto')
     df_melted["Voto"] = pd.to_numeric(df_melted["Voto"], errors='coerce').fillna(0)
 
     fig, ax = plt.subplots(figsize=(12, 6))
 
-    # 2. Disegniamo le curve dei singoli parametri
+    # 1. Disegniamo le curve dei singoli parametri
     sns.kdeplot(
         data=df_melted, 
         x="Voto", 
@@ -212,29 +210,33 @@ if not res_df.empty:
         ax=ax
     )
 
-    # 3. Aggiungiamo la curva dello SCORE FINALE (Tratteggiata e più marcata)
+    # 2. Aggiungiamo la curva dello SCORE FINALE
     sns.kdeplot(
         data=res_df, 
         x="Score Finale", 
         color="black", 
-        label="SCORE FINALE",
-        linewidth=4,       # Più spessa per visibilità
-        linestyle="--",    # Tratteggiata
+        label="SCORE FINALE", # Etichetta per la legenda
+        linewidth=3,       
+        linestyle="--",    
         ax=ax
     )
+
+    # --- FIX PER LA LEGENDA ---
+    # Recuperiamo gli "handles" (le linee) e le "labels" (i nomi) generati da Seaborn + Matplotlib
+    handles, labels = ax.get_legend_handles_labels()
+    
+    # Visualizziamo la legenda combinata
+    ax.legend(handles=handles, labels=labels, title="Parametri e Risultato", loc='upper left')
 
     # Personalizzazione estetica
     ax.set_xlim(0, 100)
     ax.set_title("Profilo di Distribuzione: Parametri vs Risultato Finale", fontsize=16)
     ax.set_xlabel("Voto / Score (0-100)", fontsize=12)
     ax.set_ylabel("Densità", fontsize=12)
-    
-    # Aggiorniamo la legenda per includere lo Score Finale
-    ax.legend(title="Legenda", loc='upper left')
     ax.grid(axis='both', linestyle='--', alpha=0.3)
 
     st.pyplot(fig)
-
+    
 else:
     # Questa parte viene eseguita solo all'avvio (tabella vuota)
     st.dataframe(display_df, use_container_width=True, hide_index=True)
