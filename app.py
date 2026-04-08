@@ -26,7 +26,7 @@ with st.sidebar.expander(config.Sidebar_AI_Title):
 # --- 3. SIDEBAR: PESI E PARAMETRI (Ricalcolo Istantaneo) ---
 st.sidebar.divider()
 st.sidebar.header("🎛️ Bilanciamento Dinamico")
-with st.sidebar.popover("💡Come funziona il calcolo?"):
+with st.sidebar.popover(config.HELP_PESI):
      st.markdown(config.HELP_CALCOLO_PESI)
 
 # Pesi per il mix finale (AI vs Similarità)
@@ -50,8 +50,8 @@ wa1, wa2, wa3, wa4 = (w_desc/total_ai_w, w_geo/total_ai_w, w_dim/total_ai_w, w_a
 # --- 4. UI PRINCIPALE ---
 st.title("Simulatore campagna marketing")
 st.divider()
-with st.popover("💡Istruzioni"):
-     st.markdown(config.HELP_GENERALE)
+with st.popover(config.HELP_Istruzioni):
+     st.markdown(config.HELP_Generale)
 st.divider()
 
 col1, col2 = st.columns(2)
