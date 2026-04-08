@@ -128,6 +128,7 @@ if st.session_state.raw_results:
     # --- 7. VISUALIZZAZIONE RISULTATI ---
     st.divider()
     st.subheader("🏆 Ranking Ottimizzato")
+    st.caption("Muovi gli slider dei pesi per ricalcolare la classifica istantaneamente senza analizzare nuovamente il database")
     
     # Formattazione e visualizzazione
     display_df = res_df[["Azienda", "Score Finale", "Score AI", "Affinità %", "Settore", "Motivo"]]
