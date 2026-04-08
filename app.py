@@ -213,13 +213,13 @@ if not res_df.empty:
         ax=ax
     )
 
-    # 4. TRUCCO PER IL TRATTEGGIO:
-    # Cerchiamo la linea che si chiama "TOTAL SCORE" tra quelle create e la modifichiamo
+    # 4. TRUCCO PER IL TRATTEGGIO E SPESSORE:
     for line in ax.get_lines():
         if line.get_label() == "TOTAL SCORE":
-            line.set_linestyle("--") # La rendiamo tratteggiata
-            line.set_linewidth(4)    # La rendiamo più spessa
-            line.set_color("black")  # La rendiamo nera per farla risaltare
+            line.set_linestyle("--")           # Tratteggio
+            line.set_linewidth(6)              # <--- AUMENTA QUESTO VALORE (es. da 4 a 6 o 8)
+            line.set_color("black")            # Colore nero
+            line.set_alpha(1.0)                # Forza l'opacità al massimo per farla risaltare
 
     # Estetica finale
     ax.set_xlim(0, 100)
