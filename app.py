@@ -148,36 +148,47 @@ st.caption(config.WARNING_TAB)
 
 if not res_df.empty:
     st.divider()
-    st.subheader("📈 Profilo Comparativo dei Lead (Top 5)")
-    st.caption("Ogni linea rappresenta un'azienda. I punti indicano il voto assegnato dall'AI per ogni specifico parametro.")
+    st.subheader("📊 Analisi Comparativa delle Distribuzioni")
+    st.caption("Confronto diretto della densità dei voti per ogni parametro. Le curve mostrano dove si concentra maggiormente il giudizio dell'AI.")
 
-    # Prepariamo i dati: prendiamo le prime 5 aziende della classifica per non affollare il grafico
-    top_n = 5
-    df_plot = res_df.head(top_n)
+    # Prepariamo i dati per Seaborn (formato "long-form" per gestire i colori)
+    # Prendiamo solo le colonne dei voti
+    column_mapping = {
+        "v_desc": "Descrizione",
+        "v_geo": "Geografia",
+        "v_dip": "Dipendenti",
+        "v_fat": "Fatturato",
+        "v_ateco": "Settore"
+    }
+    
+    # Creiamo un dataframe temporaneo per il grafico
+    df_melted = res_df.rename(columns=column_mapping).melt(
+        id_vars=['Azienda'], 
+        value_vars=list(column_mapping.values()),
+        var_name='Parametro', 
+        value_name='Voto'
+    )
 
-    # Parametri da mappare sull'asse X
-    labels = ["Descrizione", "Geografia", "Dipendenti", "Fatturato", "Settore"]
-    column_names = ["v_desc", "v_geo", "v_dip", "v_fat", "v_ateco"]
-
+    # Creazione del grafico unico
     fig, ax = plt.subplots(figsize=(12, 6))
 
-    # Iteriamo sulle righe per disegnare una curva per ogni azienda
-    for idx, row in df_plot.iterrows():
-        values = [row[c] for c in column_names]
-        
-        # Disegniamo la linea con i punti
-        line = ax.plot(labels, values, marker='o', linewidth=2, label=row['Azienda'])
-        
-        # Opzionale: riempiamo leggermente l'area sotto la linea (effetto area chart)
-        ax.fill_between(labels, values, alpha=0.1)
+    # Usiamo histplot con l'argomento 'hue' per differenziare i parametri
+    sns.histplot(
+        data=df_melted, 
+        x="Voto", 
+        hue="Parametro", 
+        element="step",  # 'step' o 'poly' rende il grafico più leggibile quando sovrapposto
+        kde=True,        # Aggiunge le curve di densità
+        palette="bright", 
+        alpha=0.1,       # Trasparenza delle barre per vedere la sovrapposizione
+        ax=ax
+    )
 
-    # Personalizzazione estetica
-    ax.set_ylim(0, 105)
-    ax.set_ylabel("Punteggio AI (0-100)", fontsize=12)
-    ax.set_title("Analisi Multidimensionale dei Top Lead", fontsize=16, pad=20)
-    ax.grid(True, linestyle='--', alpha=0.6)
-    
-    # Spostiamo la legenda fuori dal grafico per pulizia
-    ax.legend(title="Aziende", bbox_to_anchor=(1.05, 1), loc='upper left')
+    # Personalizzazione
+    ax.set_xlim(0, 100)
+    ax.set_title("Distribuzione dei voti per parametro", fontsize=16)
+    ax.set_xlabel("Voto assegnato (0-100)", fontsize=12)
+    ax.set_ylabel("Numero di Aziende (Frequenza)", fontsize=12)
+    ax.grid(axis='y', linestyle='--', alpha=0.4)
 
     st.pyplot(fig)
