@@ -182,22 +182,25 @@ if not res_df.empty:
     st.divider()
     st.subheader("📊 Analisi Comparativa delle Curve di Densità")
 
+    # 1. Aggiungiamo 'Score Finale' direttamente al mapping
     column_mapping = {
         "v_desc": "Descrizione",
         "v_geo": "Geografia",
         "v_dip": "Dipendenti",
         "v_fat": "Fatturato",
-        "v_ateco": "Settore"
+        "v_ateco": "Settore",
+        "Score Finale": "TOTAL SCORE"  # <--- Lo aggiungiamo qui
     }
     
-    # Prepariamo i dati
-    df_params = res_df[list(column_mapping.keys())].rename(columns=column_mapping)
-    df_melted = df_params.melt(var_name='Parametro', value_name='Voto')
+    # 2. Prepariamo i dati (ora includono anche il totale)
+    df_plot = res_df[list(column_mapping.keys())].rename(columns=column_mapping)
+    df_melted = df_plot.melt(var_name='Parametro', value_name='Voto')
     df_melted["Voto"] = pd.to_numeric(df_melted["Voto"], errors='coerce').fillna(0)
 
     fig, ax = plt.subplots(figsize=(12, 6))
 
-    # 1. Disegniamo le curve dei parametri (usiamo 'legend=True')
+    # 3. Disegniamo tutto in un colpo solo
+    # Seaborn creerà la legenda perfetta per noi
     sns.kdeplot(
         data=df_melted, 
         x="Voto", 
@@ -205,35 +208,23 @@ if not res_df.empty:
         fill=True,         
         common_norm=False,  
         palette="bright", 
-        alpha=0.1,         
-        linewidth=1.5,     
-        ax=ax,
-        legend=True # Forza Seaborn a creare gli ingressi
-    )
-
-    # 2. Aggiungiamo la curva dello SCORE FINALE
-    # Usiamo una label esplicita che verrà aggiunta a quelle esistenti
-    sns.kdeplot(
-        data=res_df, 
-        x="Score Finale", 
-        color="black", 
-        linewidth=3,       
-        linestyle="--",    
-        label="SCORE FINALE",
+        alpha=0.15,         
+        linewidth=2,     
         ax=ax
     )
 
-    # --- FIX DEFINITIVO PER LA LEGENDA COMBINATA ---
-    # Questo comando raccoglie tutto ciò che ha una 'label' assegnata
-    handles, labels = ax.get_legend_handles_labels()
-    
-    # Rimuoviamo eventuali duplicati e ricreiamo la legenda
-    by_label = dict(zip(labels, handles))
-    ax.legend(by_label.values(), by_label.keys(), title="Legenda Parametri", loc='upper left')
+    # 4. TRUCCO PER IL TRATTEGGIO:
+    # Cerchiamo la linea che si chiama "TOTAL SCORE" tra quelle create e la modifichiamo
+    for line in ax.get_lines():
+        if line.get_label() == "TOTAL SCORE":
+            line.set_linestyle("--") # La rendiamo tratteggiata
+            line.set_linewidth(4)    # La rendiamo più spessa
+            line.set_color("black")  # La rendiamo nera per farla risaltare
 
+    # Estetica finale
     ax.set_xlim(0, 100)
     ax.set_title("Profilo di Distribuzione: Parametri vs Risultato Finale", fontsize=16)
-    ax.set_xlabel("Voto / Score (0-100)")
+    ax.set_xlabel("Voto (0-100)")
     ax.set_ylabel("Densità")
     ax.grid(axis='both', linestyle='--', alpha=0.3)
 
