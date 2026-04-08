@@ -25,11 +25,13 @@ with st.sidebar.expander("Modifica Comportamento AI (Richiede nuovo avvio)"):
 # --- 3. SIDEBAR: PESI E PARAMETRI (Ricalcolo Istantaneo) ---
 st.sidebar.divider()
 st.sidebar.header("🎛️ Bilanciamento Dinamico")
-st.sidebar.info(
-    "💡L'agente AI assegna un punteggio indipendente a ciascun parametro."
-    " Puoi modificare i pesi in **tempo reale** dopo l'analisi per ricalcolare istantaneamente lo "
-    "score finale, senza effettuare nuove chiamate API e analisi del database"
-)
+with st.sidebar.popover("ℹ️ Come funziona il calcolo?"):
+    st.markdown("""
+    **Logica di Valutazione:**
+    1. L'agente AI analizza l'azienda e assegna un **punteggio indipendente** a ciascun parametro (Settore, Geografia, Dimensione, Descrizione).
+    2. Questi voti vengono salvati "grezzi" nel sistema.
+    3. Muovendo gli slider sopra, puoi cambiare i pesi in **tempo reale**: lo score finale viene ricalcolato istantaneamente senza nuove chiamate API o consumo di crediti.
+    """)
 
 # Pesi per il mix finale (AI vs Similarità)
 st.sidebar.subheader("Mix Finale")
