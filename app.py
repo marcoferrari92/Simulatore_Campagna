@@ -60,7 +60,7 @@ with col1:
 with col2:
     campaign_text = st.text_area(
         "Testo Campagna:", 
-        value=TXT_DEFAULT_CAMPAIGN,
+        value=config.TXT_DEFAULT_CAMPAIGN,
         height=250
     )
 
