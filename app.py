@@ -26,18 +26,18 @@ with st.sidebar.expander("Modifica Comportamento AI (Richiede nuovo avvio)"):
 # --- 3. SIDEBAR: PESI E PARAMETRI (Ricalcolo Istantaneo) ---
 st.sidebar.header("🎛️ Bilanciamento Dinamico")
 
+# Pesi per il mix finale (AI vs Similarità)
+st.sidebar.divider()
+st.sidebar.subheader("Mix Finale")
+weight_ai = st.sidebar.slider("Peso Giudizio Globale AI", 0.0, 1.0, 0.7, step=0.05)
+weight_sim = 1.0 - weight_ai
+
 # Pesi per comporre lo Score AI (wa1-wa4)
 st.sidebar.subheader("Pesi Interni Agente")
 w_desc = st.sidebar.slider("Descrizione", 0.0, 1.0, 0.4)
 w_geo = st.sidebar.slider("Geografia", 0.0, 1.0, 0.1)
 w_dim = st.sidebar.slider("Dimensione", 0.0, 1.0, 0.2)
 w_ateco = st.sidebar.slider("Settore (ATECO)", 0.0, 1.0, 0.3)
-
-# Pesi per il mix finale (AI vs Similarità)
-st.sidebar.divider()
-st.sidebar.subheader("Mix Finale")
-weight_ai = st.sidebar.slider("Peso Giudizio Globale AI", 0.0, 1.0, 0.7, step=0.05)
-weight_sim = 1.0 - weight_ai
 
 # Normalizzazione automatica dei pesi interni
 total_ai_w = w_desc + w_geo + w_dim + w_ateco
