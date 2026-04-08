@@ -19,7 +19,7 @@ HELP_GENERALE = """
 5. **AI Agent**: Se necessario, espandi la sezione "Modifica Comportamento AI" per modificare il ruolo, il task o i criteri di valutazione dell'agente AI.
 """
 
-
+WARNING_TAB = "Muovi gli slider dei pesi per ricalcolare la classifica istantaneamente senza analizzare nuovamente il database"
 WARNING_CREDITS = "⚠️ **Attenzione:** L'avvio dell'analisi comporterà l'invio di dati alle API di OpenAI e il relativo consumo di crediti (Token)."
 
 # Configurazione Agente Default
