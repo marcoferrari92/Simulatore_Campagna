@@ -16,11 +16,11 @@ if "raw_results" not in st.session_state:
 
 # --- 2. SIDEBAR: IMPOSTAZIONI AGENTE (Richiedono nuova analisi) ---
 api_key = st.sidebar.text_input("OpenAI API Key", type="password")
-with st.sidebar.expander("Modifica Comportamento AI (Richiede nuovo avvio)"):
-    ai_role = st.text_area("AI Role", value=config.AI_ROLE_DEFAULT)
-    ai_task = st.text_area("AI Task", value=config.AI_TASK_DEFAULT)
-    eval_criteria = st.text_area("Criteri", value=config.EVAL_CRITERIA_DEFAULT)
-    max_words = st.number_input("Max parole", value=config.Max_Words)
+with st.sidebar.expander(config.Sidebar_AI_Title):
+    ai_role = st.text_area(config.Sidebar_AI_Role_Title, value=config.AI_ROLE_DEFAULT)
+    ai_task = st.text_area(config.Sidebar_AI_Task_Title, value=config.AI_TASK_DEFAULT)
+    eval_criteria = st.text_area(config.Sidebar_AI_Criteria_Title, value=config.EVAL_CRITERIA_DEFAULT)
+    max_words = st.number_input(config.Sidebar_AI_Answer_Title, value=config.Max_Words)
     temp = st.slider("Creatività", 0.0, 1.0, config.Creativity)
 
 # --- 3. SIDEBAR: PESI E PARAMETRI (Ricalcolo Istantaneo) ---
