@@ -44,7 +44,7 @@ with st.sidebar.expander("Modifica Comportamento AI (Richiede nuovo avvio)"):
     temp = st.slider("Creatività", 0.0, 1.0, 0.0)
 
 # --- 4. UI PRINCIPALE ---
-st.title("🎯 Analizzatore Lead con Pesi Dinamici")
+st.title("Simulatore campagna marketing")
 
 # Box informativo con elenco puntato
 st.info(" Segui questi passaggi per configurare l'analisi:")
