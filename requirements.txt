@@ -4,6 +4,7 @@ openai
 scikit-learn
 matplotlib
 seaborn
+plotly
 numpy==1.26.4
 spacy==3.7.4
 thinc==8.2.3
