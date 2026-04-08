@@ -25,6 +25,11 @@ with st.sidebar.expander("Modifica Comportamento AI (Richiede nuovo avvio)"):
 # --- 3. SIDEBAR: PESI E PARAMETRI (Ricalcolo Istantaneo) ---
 st.sidebar.divider()
 st.sidebar.header("🎛️ Bilanciamento Dinamico")
+st.sidebar.info(
+    "💡 **Nota:** L'agente AI assegna un punteggio indipendente a ciascun parametro (Settore, Geografia, ecc.). "
+    "Puoi modificare questi pesi in **tempo reale** dopo l'analisi per ricalcolare istantaneamente lo "
+    "score finale, senza effettuare nuove chiamate API o consumare ulteriori crediti."
+)
 
 # Pesi per il mix finale (AI vs Similarità)
 st.sidebar.subheader("Mix Finale")
