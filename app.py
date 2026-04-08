@@ -51,14 +51,8 @@ wa1, wa2, wa3, wa4 = (w_desc/total_ai_w, w_geo/total_ai_w, w_dim/total_ai_w, w_a
 st.title("Simulatore campagna marketing")
 
 # Box informativo con elenco puntato
-st.info(" Segui questi passaggi per configurare l'analisi:")
-st.markdown(f"""
-1. **Chiave API**: Inserisci la tua **OpenAI API Key** nel campo dedicato in basso nella barra laterale.
-2. **Database Clienti**: Carica il file `.json` contenente l'elenco delle aziende.
-3. **Campagna**: Incolla il testo della tua **campagna marketing** o newsletter nel riquadro a destra.
-4. **Parametri e Pesi**: Definisci i parametri e regola la loro importanza tramite gli slider.
-5. **AI Agent**: Se necessario, espandi la sezione "Personalizza Comportamento AI" per modificare il ruolo, il task o i criteri di valutazione dell'agente AI.
-""")
+st.info("Segui questi passaggi per configurare l'analisi:")
+st.markdown(config.HELP_GENERALE)
 
 col1, col2 = st.columns(2)
 with col1:
